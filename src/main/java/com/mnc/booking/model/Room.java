@@ -11,13 +11,15 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
-@Entity
+@Entity(name = "rooms")
 public class Room {
 
   @Id
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
   private String roomNo;
   private int noPeople;
   private String description;
+  @Enumerated(EnumType.STRING)
   private RoomType roomType;
   @Embedded
   @AttributeOverrides({
@@ -28,6 +30,7 @@ public class Room {
   private Boolean isBalcony;
   private Boolean isOutstandingView;
   private Boolean isTv;
+  @Enumerated(EnumType.STRING)
   private BathroomType bathroomType;
   private Boolean isCoffeeMachine;
   private Boolean isRestArea;
@@ -39,8 +42,14 @@ public class Room {
   private MeasurementUnit roomSize;
   @OneToMany(mappedBy = "roomNo")
   private List<URI> images;
+  @Enumerated(EnumType.STRING)
   private Status status;
   @Embedded
+  @AttributeOverrides({
+      @AttributeOverride( name = "version", column = @Column(name = "room_version")),
+      @AttributeOverride( name = "createdAt", column = @Column(name = "room_createdAt")),
+      @AttributeOverride( name = "modifiedAt", column = @Column(name = "room_modifiedAt"))
+  })
   private Metadata metadata;
 
 }

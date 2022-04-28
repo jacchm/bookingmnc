@@ -6,11 +6,11 @@ import javax.persistence.Entity;
 import javax.persistence.Id;
 
 @Data
-@Entity
+@Entity(name = "uris")
 public class URI {
 
   @Id
   private int id;
   private String roomNo;
-  private String uris;
+  private String uri;
 }

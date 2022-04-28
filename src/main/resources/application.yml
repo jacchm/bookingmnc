@@ -1,6 +1,6 @@
 spring:
   application:
-    name: "project-web-application"
+    name: "booking"
   jpa:
     show-sql: true
     hibernate:
