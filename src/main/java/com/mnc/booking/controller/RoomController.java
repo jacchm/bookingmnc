@@ -1,8 +1,6 @@
 package com.mnc.booking.controller;
 
-import com.mnc.booking.controller.dto.RoomCreateResponseDTO;
-import com.mnc.booking.controller.dto.RoomCreationDTO;
-import com.mnc.booking.controller.dto.RoomUpdateDTO;
+import com.mnc.booking.controller.dto.*;
 import com.mnc.booking.model.Room;
 import com.mnc.booking.service.RoomService;
 import lombok.RequiredArgsConstructor;
@@ -51,6 +49,21 @@ public class RoomController {
   @DeleteMapping({"{roomNo}"})
   public ResponseEntity<Void> deleteRoom(@PathVariable final String roomNo) {
     log.info("Room deletion request received with roomNo={}", roomNo);
+    return ResponseEntity.ok().build();
+  }
+
+  // TODO: think about the solution for URIs management
+  @PostMapping("{roomNo}/uris")
+  public ResponseEntity<URICreateResponseDTO> createRoom(@PathVariable final String roomNo,
+                                                         @Valid @RequestBody final URIDTO uriDto) {
+    log.info("URI creation request received for roomNo={} with uriDto={}", roomNo, uriDto);
+    final Integer uriId = roomService.addUri(uriDto);
+    return new ResponseEntity<>(URICreateResponseDTO.of(uriId), HttpStatus.CREATED);
+  }
+
+  @GetMapping({"{roomNo}/uris"})
+  public ResponseEntity<List<URIDTO>> getUrisForRoomNo(@PathVariable final String roomNo) {
+    log.info("URI fetch request received for roomNo={}", roomNo);
     return ResponseEntity.ok().build();
   }
 

@@ -3,8 +3,10 @@ package com.mnc.booking.model;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.UpdateTimestamp;
 
 import javax.persistence.*;
+import java.time.Instant;
 import java.util.List;
 
 @AllArgsConstructor
@@ -38,16 +40,20 @@ public class Room {
       @AttributeOverride(name = "unit", column = @Column(name = "room_size_currency"))
   })
   private MeasurementUnit roomSize;
-  @OneToMany(mappedBy = "roomNo")
+  @OneToMany(mappedBy = "roomNo", cascade = CascadeType.ALL)
   private List<URI> images;
   @Enumerated(EnumType.STRING)
   private Status status;
-  @Embedded
-  @AttributeOverrides({
-      @AttributeOverride(name = "version", column = @Column(name = "room_version")),
-      @AttributeOverride(name = "createdAt", column = @Column(name = "room_createdAt")),
-      @AttributeOverride(name = "modifiedAt", column = @Column(name = "room_modifiedAt"))
-  })
-  private Metadata metadata;
+  @Version
+  private int version;
+  @Column(updatable = false)
+  private Instant createdAt;
+  @UpdateTimestamp
+  private Instant modifiedAt;
+
+  @PrePersist
+  public void prePersistCreatedAt() {
+    this.createdAt = Instant.now();
+  }
 
 }

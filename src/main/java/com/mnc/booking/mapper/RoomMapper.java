@@ -8,7 +8,7 @@ import org.mapstruct.Mapper;
 
 @Mapper(
     componentModel = "spring",
-    uses = {PriceMapper.class, MeasurementUnitMapper.class, URIMapper.class, MetadataMapper.class},
+    uses = {PriceMapper.class, MeasurementUnitMapper.class, URIMapper.class},
     injectionStrategy = InjectionStrategy.CONSTRUCTOR)
 public interface RoomMapper {
 
