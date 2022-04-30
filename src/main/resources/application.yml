@@ -9,3 +9,5 @@ spring:
     url: jdbc:postgresql://localhost:5432/booking
     username: postgres
     password: "${Password}"
+authTokenFilter:
+  enabled: false

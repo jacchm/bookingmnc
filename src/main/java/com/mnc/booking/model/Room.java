@@ -5,7 +5,6 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
-
 import java.util.List;
 
 @AllArgsConstructor
@@ -15,7 +14,6 @@ import java.util.List;
 public class Room {
 
   @Id
-  @GeneratedValue(strategy = GenerationType.IDENTITY)
   private String roomNo;
   private int noPeople;
   private String description;
@@ -23,8 +21,8 @@ public class Room {
   private RoomType roomType;
   @Embedded
   @AttributeOverrides({
-      @AttributeOverride( name = "value", column = @Column(name = "price_per_night_value")),
-      @AttributeOverride( name = "currency", column = @Column(name = "price_per_night_currency"))
+      @AttributeOverride(name = "value", column = @Column(name = "price_per_night_value")),
+      @AttributeOverride(name = "currency", column = @Column(name = "price_per_night_currency"))
   })
   private Price pricePerNight;
   private Boolean isBalcony;
@@ -36,8 +34,8 @@ public class Room {
   private Boolean isRestArea;
   @Embedded
   @AttributeOverrides({
-      @AttributeOverride( name = "value", column = @Column(name = "room_size_value")),
-      @AttributeOverride( name = "unit", column = @Column(name = "room_size_currency"))
+      @AttributeOverride(name = "value", column = @Column(name = "room_size_value")),
+      @AttributeOverride(name = "unit", column = @Column(name = "room_size_currency"))
   })
   private MeasurementUnit roomSize;
   @OneToMany(mappedBy = "roomNo")
@@ -46,9 +44,9 @@ public class Room {
   private Status status;
   @Embedded
   @AttributeOverrides({
-      @AttributeOverride( name = "version", column = @Column(name = "room_version")),
-      @AttributeOverride( name = "createdAt", column = @Column(name = "room_createdAt")),
-      @AttributeOverride( name = "modifiedAt", column = @Column(name = "room_modifiedAt"))
+      @AttributeOverride(name = "version", column = @Column(name = "room_version")),
+      @AttributeOverride(name = "createdAt", column = @Column(name = "room_createdAt")),
+      @AttributeOverride(name = "modifiedAt", column = @Column(name = "room_modifiedAt"))
   })
   private Metadata metadata;
 

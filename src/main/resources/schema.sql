@@ -37,3 +37,8 @@
 --     surname     varchar(255),
 --     primary key (username)
 -- )
+
+-- insert into rooms (bathroom_type, description, is_balcony, is_coffee_machine, is_outstanding_view, is_rest_area, is_tv,
+--                    room_created_at, room_modified_at, room_version, no_people, price_per_night_currency,
+--                    price_per_night_value, room_size_currency, room_size_value, room_type, status, room_no)
+-- values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
