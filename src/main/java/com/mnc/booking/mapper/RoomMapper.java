@@ -1,7 +1,7 @@
 package com.mnc.booking.mapper;
 
-import com.mnc.booking.controller.dto.RoomCreationDTO;
-import com.mnc.booking.controller.dto.RoomDTO;
+import com.mnc.booking.controller.dto.room.RoomCreationDTO;
+import com.mnc.booking.controller.dto.room.RoomDTO;
 import com.mnc.booking.model.Room;
 import org.mapstruct.InjectionStrategy;
 import org.mapstruct.Mapper;

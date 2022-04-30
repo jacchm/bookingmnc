@@ -1,7 +1,7 @@
 package com.mnc.booking.mapper;
 
-import com.mnc.booking.controller.dto.UserCreationDTO;
-import com.mnc.booking.controller.dto.UserDTO;
+import com.mnc.booking.controller.dto.user.UserCreationDTO;
+import com.mnc.booking.controller.dto.user.UserDTO;
 import com.mnc.booking.model.User;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;

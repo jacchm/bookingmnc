@@ -1,6 +1,6 @@
 package com.mnc.booking.controller;
 
-import com.mnc.booking.controller.dto.*;
+import com.mnc.booking.controller.dto.room.*;
 import com.mnc.booking.model.Room;
 import com.mnc.booking.service.RoomService;
 import lombok.RequiredArgsConstructor;
@@ -28,9 +28,10 @@ public class RoomController {
   }
 
   @GetMapping({"{roomNo}"})
-  public ResponseEntity<Room> getRoom(@PathVariable final String roomNo) {
+  public ResponseEntity<RoomDTO> getRoom(@PathVariable final String roomNo) {
     log.info("Room fetch request received with roomNo={}", roomNo);
-    return ResponseEntity.ok().build();
+    final RoomDTO roomDTO = roomService.getRoom(roomNo);
+    return ResponseEntity.ok(roomDTO);
   }
 
   @GetMapping

@@ -1,6 +1,6 @@
 package com.mnc.booking.mapper;
 
-import com.mnc.booking.controller.dto.MeasurementUnitDTO;
+import com.mnc.booking.controller.dto.room.MeasurementUnitDTO;
 import com.mnc.booking.model.MeasurementUnit;
 import org.mapstruct.Mapper;
 

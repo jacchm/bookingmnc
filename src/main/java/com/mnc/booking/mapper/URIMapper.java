@@ -1,6 +1,6 @@
 package com.mnc.booking.mapper;
 
-import com.mnc.booking.controller.dto.URIDTO;
+import com.mnc.booking.controller.dto.room.URIDTO;
 import com.mnc.booking.model.URI;
 import org.mapstruct.Mapper;
 

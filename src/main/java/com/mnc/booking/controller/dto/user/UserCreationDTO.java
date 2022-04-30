@@ -1,4 +1,4 @@
-package com.mnc.booking.controller.dto;
+package com.mnc.booking.controller.dto.user;
 
 import lombok.Data;
 

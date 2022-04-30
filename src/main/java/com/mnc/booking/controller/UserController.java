@@ -1,8 +1,8 @@
 package com.mnc.booking.controller;
 
-import com.mnc.booking.controller.dto.UserCreationDTO;
-import com.mnc.booking.controller.dto.UserDTO;
-import com.mnc.booking.controller.dto.UserUpdateDTO;
+import com.mnc.booking.controller.dto.user.UserCreationDTO;
+import com.mnc.booking.controller.dto.user.UserDTO;
+import com.mnc.booking.controller.dto.user.UserUpdateDTO;
 import com.mnc.booking.service.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

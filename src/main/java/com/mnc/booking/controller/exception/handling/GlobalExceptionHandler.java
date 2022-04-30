@@ -1,6 +1,8 @@
 package com.mnc.booking.controller.exception.handling;
 
 import com.mnc.booking.controller.dto.ErrorResponseDTO;
+import com.mnc.booking.exception.AlreadyExistsException;
+import com.mnc.booking.exception.NotFoundException;
 import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -31,6 +33,32 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         .build();
 
     return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
+  }
+
+  @ExceptionHandler(AlreadyExistsException.class)
+  public ResponseEntity<ErrorResponseDTO> handleDataParsingException(final AlreadyExistsException exception) {
+
+    final ErrorResponseDTO errorResponse = ErrorResponseDTO.builder()
+        .code(HttpStatus.CONFLICT.value())
+        .status(HttpStatus.CONFLICT.getReasonPhrase())
+        .timestamp(Instant.now())
+        .message(exception.getMessage())
+        .build();
+
+    return new ResponseEntity<>(errorResponse, HttpStatus.CONFLICT);
+  }
+
+  @ExceptionHandler(NotFoundException.class)
+  public ResponseEntity<ErrorResponseDTO> handleDataParsingException(final NotFoundException exception) {
+
+    final ErrorResponseDTO errorResponse = ErrorResponseDTO.builder()
+        .code(HttpStatus.NOT_FOUND.value())
+        .status(HttpStatus.NOT_FOUND.getReasonPhrase())
+        .timestamp(Instant.now())
+        .message(exception.getMessage())
+        .build();
+
+    return new ResponseEntity<>(errorResponse, HttpStatus.NOT_FOUND);
   }
 
   @Override
