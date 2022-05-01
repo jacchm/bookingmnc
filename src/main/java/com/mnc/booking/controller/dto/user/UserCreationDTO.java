@@ -2,23 +2,26 @@ package com.mnc.booking.controller.dto.user;
 
 import lombok.Data;
 
+import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Pattern;
 
 @Data
 public class UserCreationDTO {
 
-  @NotBlank(message = "Email address cannot be null neither empty.")
-//  @Pattern(regexp = "^(?=.{1,64}@)[A-Za-z0-9_-]+(\\\\.[A-Za-z0-9_-]+)*@[^-][A-Za-z0-9-]+(\\\\.[A-Za-z0-9-]+)*(\\\\.[A-Za-z]{2,})$", message = "Invalid email address.")
+  @NotBlank(message = "email address cannot be null neither empty.")
+  @Email(message = "Invalid email address.")
   private String email;
-  @NotBlank(message = "Username cannot be null neither empty.")
-  @Pattern(regexp = "[a-zA-Z0-9]{5,}", message = "Username should consist of letters and numbers and have minimum of 5 characters.")
+  @NotBlank(message = "username cannot be null neither empty.")
+  @Pattern(regexp = "[a-zA-Z0-9]{5,}", message = "username should consist of letters and numbers and have minimum 5 characters.")
   private String username;
-  @NotBlank(message = "Password cannot be null neither empty.")
+  @NotBlank(message = "password cannot be null neither empty.")
   private String password;
-  @NotBlank(message = "Role cannot be null neither empty.")
-  private String roles;
+  //  @NotBlank(message = "Role cannot be null neither empty.")
+//  private String roles;
+  @NotBlank(message = "name cannot be null neither empty.")
   private String name;
+  @NotBlank(message = "surname cannot be null neither empty.")
   private String surname;
 
 }

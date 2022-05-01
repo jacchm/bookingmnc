@@ -16,7 +16,7 @@ public interface UserMapper {
 
   String GRAND_AUTHORITIES_SEPARATOR = ",";
 
-  @Mapping(source = "userCreationDTO.roles", target = "authorities")
+  @Mapping(target = "authorities", constant = "ROLE_USER")
   User mapToUser(final UserCreationDTO userCreationDTO);
 
   @Mapping(target = "authorities", expression = "java(mapAuthoritiesListToString(user.getAuthorities()))")

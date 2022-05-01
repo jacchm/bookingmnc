@@ -1,6 +1,5 @@
 package com.mnc.booking.controller.dto.room;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
 import com.mnc.booking.model.*;
 import lombok.Data;
 
@@ -25,8 +24,6 @@ public class RoomDTO {
   private List<URI> images;
   private Status status;
   private int version;
-  @JsonFormat(shape = JsonFormat.Shape.STRING)
   private Instant createdAt;
-  @JsonFormat(shape = JsonFormat.Shape.STRING)
   private Instant modifiedAt;
 }

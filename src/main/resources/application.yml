@@ -2,12 +2,21 @@ spring:
   application:
     name: "booking"
   jpa:
-    show-sql: true
     hibernate:
       ddl-auto: update
   datasource:
     url: jdbc:postgresql://localhost:5432/booking
     username: postgres
     password: "${Password}"
+  jackson:
+    default-property-inclusion: non_null
+    serialization:
+      WRITE_DATES_AS_TIMESTAMPS: false
+---
+logging:
+  level:
+    org.hibernate.SQL: DEBUG
+    org.hibernate.type: TRACE
+---
 authTokenFilter:
   enabled: false

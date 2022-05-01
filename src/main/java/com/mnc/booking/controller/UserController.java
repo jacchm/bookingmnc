@@ -1,11 +1,14 @@
 package com.mnc.booking.controller;
 
+import com.mnc.booking.controller.dto.user.UserCreateResponseDTO;
 import com.mnc.booking.controller.dto.user.UserCreationDTO;
 import com.mnc.booking.controller.dto.user.UserDTO;
 import com.mnc.booking.controller.dto.user.UserUpdateDTO;
+import com.mnc.booking.mapper.UserMapper;
 import com.mnc.booking.service.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -19,16 +22,23 @@ import java.util.List;
 public class UserController {
 
   private final UserService userService;
+  private final UserMapper userMapper;
 
   @PostMapping
-  public ResponseEntity<Void> registerUser(@Valid @RequestBody final UserCreationDTO userCreationDTO) {
+  public ResponseEntity<UserCreateResponseDTO> registerUser(@Valid @RequestBody final UserCreationDTO userCreationDTO) {
     log.info("Received registration request with user data={}", userCreationDTO);
-    return ResponseEntity.ok().build();
+    final String username = userService.createUser(userCreationDTO);
+    return new ResponseEntity<>(UserCreateResponseDTO.of(username), HttpStatus.CREATED);
   }
 
   @GetMapping
-  public ResponseEntity<List<UserDTO>> getUsers() {
-    return ResponseEntity.ok(List.of());
+  public ResponseEntity<List<UserDTO>> getUsers(@RequestHeader(name = "X-TOTAL-COUNT", required = false, defaultValue = "false") final boolean xTotalCount,
+                                                @RequestParam(required = false, defaultValue = "1") final Integer pageNumber,
+                                                @RequestParam(required = false, defaultValue = "10") final Integer pageSize,
+                                                @RequestParam(required = false) final String sort) {
+    log.info("Received users fetch request with params: pageSize={}, pageNumber={}, xTotalCount={} and sort={}", pageSize, pageNumber, xTotalCount, sort);
+    final List<UserDTO> users = userService.getUsers(pageNumber - 1, pageSize, sort, xTotalCount);
+    return ResponseEntity.ok(users);
   }
 
   //  @PreAuthorize(value = "hasRole('ROLE_ADMIN')") or ADMIN
@@ -36,13 +46,13 @@ public class UserController {
   @GetMapping("{username}")
   public ResponseEntity<UserDTO> getUser(@PathVariable final String username) {
     log.info("Received user fetch request with username={}", username);
-    return ResponseEntity.ok().build();
+    final UserDTO userDTO = userService.getUser(username);
+    return ResponseEntity.ok(userDTO);
   }
 
   @PutMapping("{username}")
   public ResponseEntity<Void> updateUser(@PathVariable final String username,
                                          @RequestBody final UserUpdateDTO userUpdateDTO) {
-
     log.info("Received user update request with username={}", username);
     return ResponseEntity.ok().build();
   }
@@ -50,7 +60,8 @@ public class UserController {
   @DeleteMapping("{username}")
   public ResponseEntity<Void> deleteUser(@PathVariable final String username) {
     log.info("Received user delete request with username={}", username);
-    return ResponseEntity.ok().build();
+    userService.deleteUser(username);
+    return ResponseEntity.noContent().build();
   }
 
 }
