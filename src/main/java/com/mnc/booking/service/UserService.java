@@ -1,7 +1,11 @@
 package com.mnc.booking.service;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.ObjectReader;
 import com.mnc.booking.controller.dto.user.UserCreationDTO;
 import com.mnc.booking.controller.dto.user.UserDTO;
+import com.mnc.booking.controller.dto.user.UserRolesUpdateDTO;
 import com.mnc.booking.controller.dto.user.UserUpdateDTO;
 import com.mnc.booking.exception.AlreadyExistsException;
 import com.mnc.booking.exception.NotFoundException;
@@ -10,6 +14,7 @@ import com.mnc.booking.model.User;
 import com.mnc.booking.repository.UserRepository;
 import com.mnc.booking.util.SortParamsParser;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.BeanUtils;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -17,9 +22,13 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
+import static com.mnc.booking.config.RoleConstants.GRAND_AUTHORITIES_SEPARATOR;
 import static com.mnc.booking.config.RoleConstants.ROLE_USER;
 
 @Transactional
@@ -34,6 +43,7 @@ public class UserService {
   private final UserMapper userMapper;
   private final PasswordEncoder passwordEncoder;
   private final SortParamsParser sortParamsParser;
+  private final ObjectMapper objectMapper;
 
   public String createUser(final UserCreationDTO userCreationDTO) {
     final User newUser = userMapper.mapToUser(userCreationDTO);
@@ -53,8 +63,20 @@ public class UserService {
         .orElseThrow(() -> new NotFoundException(String.format(USER_NOT_FOUND_ERROR_MSG, username)));
   }
 
-  public void updateUser(final UserUpdateDTO userUpdateDTO) {
-    
+  public void updateUser(final String username, final UserUpdateDTO userUpdateDTO) {
+    final User userUpdate = userMapper.mapToUser(userUpdateDTO);
+
+    final User user = userRepository.findByUsername(username)
+        .orElseThrow(() -> new NotFoundException(String.format(USER_NOT_FOUND_ERROR_MSG, username)));
+    BeanUtils.copyProperties(userUpdate, user, ignoreNullProperties(userUpdate));
+
+    userRepository.save(user);
+  }
+
+  public void updateUserRoles(final String username, final UserRolesUpdateDTO userRolesUpdateDTO) {
+    userRepository.setUserAuthoritiesByUsername(username, String.join(GRAND_AUTHORITIES_SEPARATOR, userRolesUpdateDTO.getAuthorities()))
+        .filter(result -> result > 0)
+        .orElseThrow(() -> new NotFoundException(String.format(USER_NOT_FOUND_ERROR_MSG, username)));
   }
 
   public List<UserDTO> getUsers(final Integer pageNumber, final Integer pageSize, final String sortParams, final Boolean xTotalCount) {
@@ -71,6 +93,31 @@ public class UserService {
 
   public void deleteUser(final String username) {
     userRepository.deleteById(username);
+  }
+
+  private String[] ignoreNullProperties(final User userUpdate) {
+    final List<String> ignoredProperties = new ArrayList<>();
+    ignoredProperties.add("username");
+    ignoredProperties.add("password");
+    ignoredProperties.add("authorities");
+    if (Objects.isNull(userUpdate.getEmail())) {
+      ignoredProperties.add("email");
+    }
+    if (Objects.isNull(userUpdate.getName())) {
+      ignoredProperties.add("name");
+    }
+    if (Objects.isNull(userUpdate.getSurname())) {
+      ignoredProperties.add("surname");
+    }
+
+    return ignoredProperties.toArray(String[]::new);
+  }
+
+  private User ignoreNullPropertiesOM(final User userUpdate, final User user) throws IOException {
+    // problem with authorities as a list (probably getter is messing up)
+    final JsonNode jsonNode = objectMapper.valueToTree(user);
+    ObjectReader updater = objectMapper.readerForUpdating(userUpdate);
+    return updater.readValue(jsonNode, User.class);
   }
 
 }

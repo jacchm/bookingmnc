@@ -17,8 +17,6 @@ public class UserCreationDTO {
   private String username;
   @NotBlank(message = "password cannot be null neither empty.")
   private String password;
-  //  @NotBlank(message = "Role cannot be null neither empty.")
-//  private String roles;
   @NotBlank(message = "name cannot be null neither empty.")
   private String name;
   @NotBlank(message = "surname cannot be null neither empty.")
