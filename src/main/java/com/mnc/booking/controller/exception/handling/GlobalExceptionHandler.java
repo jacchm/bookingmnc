@@ -7,6 +7,7 @@ import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -23,7 +24,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
   private final String VALIDATION_ERROR_MSG = "There is a validation error. Please check the details.";
 
   @ExceptionHandler(IllegalArgumentException.class)
-  public ResponseEntity<ErrorResponseDTO> handleDataParsingException(final IllegalArgumentException exception) {
+  public ResponseEntity<ErrorResponseDTO> handleIllegalArgumentException(final IllegalArgumentException exception) {
 
     final ErrorResponseDTO errorResponse = ErrorResponseDTO.builder()
         .code(HttpStatus.BAD_REQUEST.value())
@@ -36,7 +37,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
   }
 
   @ExceptionHandler(AlreadyExistsException.class)
-  public ResponseEntity<ErrorResponseDTO> handleDataParsingException(final AlreadyExistsException exception) {
+  public ResponseEntity<ErrorResponseDTO> handleAlreadyExistsException(final AlreadyExistsException exception) {
 
     final ErrorResponseDTO errorResponse = ErrorResponseDTO.builder()
         .code(HttpStatus.CONFLICT.value())
@@ -49,7 +50,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
   }
 
   @ExceptionHandler(NotFoundException.class)
-  public ResponseEntity<ErrorResponseDTO> handleDataParsingException(final NotFoundException exception) {
+  public ResponseEntity<ErrorResponseDTO> handleNotFoundException(final NotFoundException exception) {
 
     final ErrorResponseDTO errorResponse = ErrorResponseDTO.builder()
         .code(HttpStatus.NOT_FOUND.value())
@@ -59,6 +60,19 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         .build();
 
     return new ResponseEntity<>(errorResponse, HttpStatus.NOT_FOUND);
+  }
+
+  @ExceptionHandler(AuthenticationException.class)
+  public ResponseEntity<ErrorResponseDTO> handleAuthenticationException(final AuthenticationException exception) {
+
+    final ErrorResponseDTO errorResponse = ErrorResponseDTO.builder()
+        .code(HttpStatus.UNAUTHORIZED.value())
+        .status(HttpStatus.UNAUTHORIZED.getReasonPhrase())
+        .timestamp(Instant.now())
+        .message(exception.getMessage())
+        .build();
+
+    return new ResponseEntity<>(errorResponse, HttpStatus.UNAUTHORIZED);
   }
 
   @Override

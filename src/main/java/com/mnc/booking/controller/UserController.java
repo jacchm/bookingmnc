@@ -25,8 +25,8 @@ public class UserController {
   private final UserMapper userMapper;
 
   @PostMapping
-  public ResponseEntity<UserCreateResponseDTO> registerUser(@Valid @RequestBody final UserCreationDTO userCreationDTO) {
-    log.info("Received registration request with user data={}", userCreationDTO);
+  public ResponseEntity<UserCreateResponseDTO> createUser(@Valid @RequestBody final UserCreationDTO userCreationDTO) {
+    log.info("Received creation request with user data={}", userCreationDTO);
     final String username = userService.createUser(userCreationDTO);
     return new ResponseEntity<>(UserCreateResponseDTO.of(username), HttpStatus.CREATED);
   }

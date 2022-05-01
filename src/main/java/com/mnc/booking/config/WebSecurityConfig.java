@@ -5,6 +5,7 @@ import com.mnc.booking.service.UserDetailsServiceImpl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -28,10 +29,21 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
   }
 
   @Override
-  public void configure(AuthenticationManagerBuilder authenticationManagerBuilder) throws Exception {
-    authenticationManagerBuilder
+  protected void configure(AuthenticationManagerBuilder auth) throws Exception {
+    auth
         .userDetailsService(userDetailsService)
         .passwordEncoder(passwordEncoder());
+  }
+
+  @Override
+  @Bean
+  public AuthenticationManager authenticationManagerBean() throws Exception {
+    return super.authenticationManagerBean();
+  }
+
+  @Bean
+  public PasswordEncoder passwordEncoder() {
+    return new BCryptPasswordEncoder();
   }
 
   @Override
@@ -40,13 +52,12 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         .exceptionHandling().authenticationEntryPoint(unauthorizedHandler).and()
         .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and()
         .authorizeRequests()
+//        .antMatchers("/users/**").hasAuthority(ROLE_ADMIN)
+//        .antMatchers("/rooms/**").hasAnyAuthority(ROLE_ADMIN, ROLE_RECEPTIONIST)
+//        .antMatchers("/reservation/**").hasAnyAuthority(ROLE_ADMIN, ROLE_RECEPTIONIST)
+//        .antMatchers("/me/**").hasAnyAuthority(ROLE_ADMIN, ROLE_RECEPTIONIST, ROLE_USER)
         .antMatchers("/**").permitAll()
         .anyRequest().authenticated();
     http.addFilterBefore(authenticationJwtTokenFilter(), UsernamePasswordAuthenticationFilter.class);
-  }
-
-  @Bean
-  public PasswordEncoder passwordEncoder() {
-    return new BCryptPasswordEncoder();
   }
 }

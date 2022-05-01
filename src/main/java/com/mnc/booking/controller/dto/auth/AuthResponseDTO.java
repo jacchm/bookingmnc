@@ -1,5 +1,6 @@
 package com.mnc.booking.controller.dto.auth;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -11,6 +12,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor(staticName = "of")
 public class AuthResponseDTO {
 
-  private String access_token;
+  @JsonProperty(value = "access_token")
+  private String accessToken;
 
 }
