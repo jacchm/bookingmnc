@@ -15,6 +15,10 @@ public interface UserRepository extends PagingAndSortingRepository<User, String>
   @Query("update User u set u.authorities = ?2 where u.username = ?1")
   Optional<Integer> setUserAuthoritiesByUsername(final String username, final String authorities);
 
+  @Modifying
+  @Query("update User u set u.password = ?3 where u.username = ?1 and u.password = ?2")
+  Optional<Integer> updateUserPasswordByUsername(final String username, final String oldPassword, final String newPassword);
+
   @Override
   @Modifying
   @Query(nativeQuery = true, value = "DELETE FROM users WHERE username = ?1")

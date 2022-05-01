@@ -47,8 +47,8 @@ public class UserController {
   }
 
   @PatchMapping("{username}")
-  public ResponseEntity<Void> updateUser(@PathVariable final String username,
-                                         @RequestBody final UserRolesUpdateDTO userRolesUpdateDTO) {
+  public ResponseEntity<Void> updateUserRoles(@PathVariable final String username,
+                                              @RequestBody final UserRolesUpdateDTO userRolesUpdateDTO) {
     log.info("Received user update request with username={}", username);
     userService.updateUserRoles(username, userRolesUpdateDTO);
     return ResponseEntity.noContent().build();

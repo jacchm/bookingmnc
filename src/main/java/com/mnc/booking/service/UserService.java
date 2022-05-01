@@ -1,8 +1,5 @@
 package com.mnc.booking.service;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.ObjectReader;
 import com.mnc.booking.controller.dto.user.UserCreationDTO;
 import com.mnc.booking.controller.dto.user.UserDTO;
 import com.mnc.booking.controller.dto.user.UserRolesUpdateDTO;
@@ -18,18 +15,17 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
 import static com.mnc.booking.config.RoleConstants.GRAND_AUTHORITIES_SEPARATOR;
-import static com.mnc.booking.config.RoleConstants.ROLE_USER;
 
 @Transactional
 @RequiredArgsConstructor
@@ -43,11 +39,9 @@ public class UserService {
   private final UserMapper userMapper;
   private final PasswordEncoder passwordEncoder;
   private final SortParamsParser sortParamsParser;
-  private final ObjectMapper objectMapper;
 
   public String createUser(final UserCreationDTO userCreationDTO) {
     final User newUser = userMapper.mapToUser(userCreationDTO);
-    newUser.setAuthorities(ROLE_USER);
     newUser.setPassword(passwordEncoder.encode(newUser.getPassword()));
 
     if (userRepository.existsById(userCreationDTO.getUsername())) {
@@ -65,10 +59,20 @@ public class UserService {
 
   public void updateUser(final String username, final UserUpdateDTO userUpdateDTO) {
     final User userUpdate = userMapper.mapToUser(userUpdateDTO);
-
     final User user = userRepository.findByUsername(username)
         .orElseThrow(() -> new NotFoundException(String.format(USER_NOT_FOUND_ERROR_MSG, username)));
     BeanUtils.copyProperties(userUpdate, user, ignoreNullProperties(userUpdate));
+
+    userRepository.save(user);
+  }
+
+  public void updatePassword(final String username, final String password, final String newPassword) {
+    final User user = userRepository.findByUsername(username)
+        .orElseThrow(() -> new NotFoundException(String.format(USER_NOT_FOUND_ERROR_MSG, username)));
+    if (!passwordEncoder.matches(password, user.getPassword())) {
+      throw new BadCredentialsException("Wrong current password provided.");
+    }
+    user.setPassword(passwordEncoder.encode(newPassword));
 
     userRepository.save(user);
   }
@@ -113,11 +117,11 @@ public class UserService {
     return ignoredProperties.toArray(String[]::new);
   }
 
-  private User ignoreNullPropertiesOM(final User userUpdate, final User user) throws IOException {
-    // problem with authorities as a list (probably getter is messing up)
-    final JsonNode jsonNode = objectMapper.valueToTree(user);
-    ObjectReader updater = objectMapper.readerForUpdating(userUpdate);
-    return updater.readValue(jsonNode, User.class);
-  }
+//  private User ignoreNullPropertiesOM(final User userUpdate, final User user) throws IOException {
+//    // problem with authorities as a list (probably getter is messing up)
+//    final JsonNode jsonNode = objectMapper.valueToTree(user);
+//    ObjectReader updater = objectMapper.readerForUpdating(userUpdate);
+//    return updater.readValue(jsonNode, User.class);
+//  }
 
 }

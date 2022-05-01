@@ -23,7 +23,7 @@ import javax.validation.Valid;
 @Slf4j
 @RequiredArgsConstructor
 @RestController
-@RequestMapping()
+@RequestMapping
 public class LoginController {
 
   private final AuthenticationManager authenticationManager;

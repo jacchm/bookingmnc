@@ -4,6 +4,7 @@ import com.mnc.booking.controller.dto.ErrorResponseDTO;
 import com.mnc.booking.exception.AlreadyExistsException;
 import com.mnc.booking.exception.NotFoundException;
 import org.springframework.context.support.DefaultMessageSourceResolvable;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -75,6 +76,20 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     return new ResponseEntity<>(errorResponse, HttpStatus.UNAUTHORIZED);
   }
 
+  @ExceptionHandler(DataIntegrityViolationException.class)
+  public ResponseEntity<ErrorResponseDTO> handleDataIntegrityViolationException(final DataIntegrityViolationException exception) {
+
+    final ErrorResponseDTO errorResponse = ErrorResponseDTO.builder()
+        .code(HttpStatus.BAD_REQUEST.value())
+        .status(HttpStatus.BAD_REQUEST.getReasonPhrase())
+        .timestamp(Instant.now())
+        .message(VALIDATION_ERROR_MSG)
+        .details(getDetailedIntegrityViolations(exception))
+        .build();
+
+    return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
+  }
+
   @Override
   protected ResponseEntity<Object> handleMethodArgumentNotValid(MethodArgumentNotValidException ex, HttpHeaders headers,
                                                                 HttpStatus status, WebRequest request) {
@@ -95,5 +110,10 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         .collect(Collectors.toList());
   }
 
+  private List<String> getDetailedIntegrityViolations(final DataIntegrityViolationException exception) {
+    final String message = exception.getCause().getCause().getMessage(); // ERROR: duplicate key value violates unique constraint "uk6dotkott2kjsp8vw4d0m25fb7" Szczegóły: Key (email)=(jacek123@gmail.com) already exists.
+    final String detailedMessage = message.substring(message.indexOf("Key") + 5).replaceAll("[()]", "") + " in the database.";
+    return List.of(detailedMessage);
+  }
 
 }
