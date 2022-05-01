@@ -2,6 +2,7 @@ package com.mnc.booking.controller.exception.handling;
 
 import com.mnc.booking.controller.dto.ErrorResponseDTO;
 import com.mnc.booking.exception.AlreadyExistsException;
+import com.mnc.booking.exception.InvalidTokenException;
 import com.mnc.booking.exception.NotFoundException;
 import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -88,6 +89,19 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         .build();
 
     return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
+  }
+
+  @ExceptionHandler(InvalidTokenException.class)
+  public ResponseEntity<ErrorResponseDTO> handleDataIntegrityViolationException(final InvalidTokenException exception) {
+
+    final ErrorResponseDTO errorResponse = ErrorResponseDTO.builder()
+        .code(HttpStatus.UNAUTHORIZED.value())
+        .status(HttpStatus.UNAUTHORIZED.getReasonPhrase())
+        .timestamp(Instant.now())
+        .message(exception.getMessage())
+        .build();
+
+    return new ResponseEntity<>(errorResponse, HttpStatus.UNAUTHORIZED);
   }
 
   @Override

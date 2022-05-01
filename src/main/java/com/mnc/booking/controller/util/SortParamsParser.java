@@ -1,4 +1,4 @@
-package com.mnc.booking.util;
+package com.mnc.booking.controller.util;
 
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Component;
