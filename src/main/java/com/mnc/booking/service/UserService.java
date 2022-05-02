@@ -3,27 +3,29 @@ package com.mnc.booking.service;
 import com.mnc.booking.controller.dto.user.UserCreationDTO;
 import com.mnc.booking.controller.dto.user.UserRolesUpdateDTO;
 import com.mnc.booking.controller.dto.user.UserUpdateDTO;
+import com.mnc.booking.controller.util.FilterParamsParser;
 import com.mnc.booking.controller.util.SortParamsParser;
 import com.mnc.booking.exception.AlreadyExistsException;
 import com.mnc.booking.exception.NotFoundException;
 import com.mnc.booking.mapper.UserMapper;
 import com.mnc.booking.model.User;
 import com.mnc.booking.repository.UserRepository;
+import com.mnc.booking.util.GenericSpecificationsBuilder;
+import com.mnc.booking.util.SpecificationFactory;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.BeanUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.CollectionUtils;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
 
 import static com.mnc.booking.security.util.RoleConstants.GRAND_AUTHORITIES_SEPARATOR;
 
@@ -36,9 +38,11 @@ public class UserService {
   private static final String USER_NOT_FOUND_ERROR_MSG = "User with username=%s has not been found.";
 
   private final UserRepository userRepository;
+  private final SpecificationFactory<User> userSpecificationFactory;
   private final UserMapper userMapper;
   private final PasswordEncoder passwordEncoder;
   private final SortParamsParser sortParamsParser;
+  private final FilterParamsParser filterParamsParser;
 
   public String createUser(final UserCreationDTO userCreationDTO) {
     final User newUser = userMapper.mapToUser(userCreationDTO);
@@ -55,11 +59,14 @@ public class UserService {
     return userRepository.findById(username);
   }
 
-  public Page<User> getUsers(final Integer pageNumber, final Integer pageSize, final String sortParams) {
+  public Page<User> searchUsers(final Integer pageNumber, final Integer pageSize, final String sortParams,
+                                final Map<String, String> filterParams) {
+    final Map<String, String> filters = filterParamsParser.prepareFilterParamsMap(filterParams, User.class);
+
     final Sort sort = Sort.by(sortParamsParser.prepareSortOrderList(sortParams, User.class));
     final Pageable pageable = PageRequest.of(pageNumber, pageSize, sort);
 
-    return userRepository.findAll(pageable);
+    return userRepository.findAll(buildFilteringQuery(filters), pageable);
   }
 
   public void updateUser(final String username, final UserUpdateDTO userUpdateDTO) {
@@ -90,6 +97,14 @@ public class UserService {
 
   public void deleteUser(final String username) {
     userRepository.deleteById(username);
+  }
+
+  private Specification<User> buildFilteringQuery(final Map<String, String> filters) {
+    final GenericSpecificationsBuilder<User> builder = new GenericSpecificationsBuilder<>();
+    if (!CollectionUtils.isEmpty(filters)) {
+      filters.forEach((key, value) -> builder.with(userSpecificationFactory.isEqual(key, value)));
+    }
+    return builder.build();
   }
 
   private String[] ignoreNullProperties(final User userUpdate) {

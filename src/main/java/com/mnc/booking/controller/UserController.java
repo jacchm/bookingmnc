@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.validation.Valid;
 import javax.validation.constraints.Pattern;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -45,11 +46,12 @@ public class UserController {
   @GetMapping
   public ResponseEntity<List<UserDTO>> getUsers(@RequestHeader(name = X_TOTAL_COUNT, required = false, defaultValue = "false") final boolean xTotalCount,
                                                 @RequestParam(required = false, defaultValue = "1") final Integer pageNumber,
-                                                @RequestParam(required = false, defaultValue = "10") final Integer pageSize,
+                                                @RequestParam(required = false, defaultValue = "20") final Integer pageSize,
                                                 @Pattern(regexp = SORT_REGEX, message = "Sort parameters should be in form of field:direction (ASC/DESC) separated by ',' (comma).")
-                                                @RequestParam(required = false, defaultValue = "") final String sort) {
-    log.info("Received users fetch request with params: pageSize={}, pageNumber={}, xTotalCount={} and sort={}", pageSize, pageNumber, xTotalCount, sort);
-    final Page<User> results = userService.getUsers(pageNumber - 1, pageSize, sort);
+                                                @RequestParam(required = false) final String sort,
+                                                @RequestParam final Map<String, String> filterParams) {
+    log.info("Received users search request with params: pageSize={}, pageNumber={}, xTotalCount={}, sortParams={} and filterParams={}", pageSize, pageNumber, xTotalCount, sort, filterParams);
+    final Page<User> results = userService.searchUsers(pageNumber - 1, pageSize, sort, filterParams);
     final List<UserDTO> users = results.getContent()
         .stream()
         .map(userMapper::mapToUserDTO)
