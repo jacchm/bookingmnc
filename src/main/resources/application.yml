@@ -19,4 +19,4 @@ logging:
     org.hibernate.type: TRACE
 ---
 authTokenFilter:
-  enabled: true
+  enabled: false

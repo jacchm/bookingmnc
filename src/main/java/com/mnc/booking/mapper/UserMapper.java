@@ -12,7 +12,7 @@ import org.springframework.security.core.GrantedAuthority;
 import java.util.Collection;
 import java.util.stream.Collectors;
 
-import static com.mnc.booking.config.RoleConstants.GRAND_AUTHORITIES_SEPARATOR;
+import static com.mnc.booking.security.util.RoleConstants.GRAND_AUTHORITIES_SEPARATOR;
 
 @Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.IGNORE)
 public interface UserMapper {

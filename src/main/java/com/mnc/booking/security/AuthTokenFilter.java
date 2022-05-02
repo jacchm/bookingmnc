@@ -26,12 +26,12 @@ import java.util.Objects;
 public class AuthTokenFilter extends OncePerRequestFilter {
 
   private static final String USERNAME_HEADER = "username";
+  private final AntPathMatcher antPathMatcher = new AntPathMatcher();
 
   private JwtTokenProvider jwtUtils;
   private UserDetailsServiceImpl userDetailsService;
   @Value("${authTokenFilter.enabled}")
   private boolean isEnabled;
-  private AntPathMatcher antPathMatcher = new AntPathMatcher();
 
   @Autowired
   private void setJwtUtils(final JwtTokenProvider jwtUtils) {
@@ -69,8 +69,8 @@ public class AuthTokenFilter extends OncePerRequestFilter {
       } catch (Exception ex) {
         log.error("Cannot set user authentication: {}", ex.getMessage());
       }
-      filterChain.doFilter(wrappedRequest, response);
     }
+    filterChain.doFilter(wrappedRequest, response);
   }
 
   private String parseJwt(final HttpServletRequest request) {

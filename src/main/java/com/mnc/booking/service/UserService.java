@@ -1,7 +1,6 @@
 package com.mnc.booking.service;
 
 import com.mnc.booking.controller.dto.user.UserCreationDTO;
-import com.mnc.booking.controller.dto.user.UserDTO;
 import com.mnc.booking.controller.dto.user.UserRolesUpdateDTO;
 import com.mnc.booking.controller.dto.user.UserUpdateDTO;
 import com.mnc.booking.controller.util.SortParamsParser;
@@ -12,6 +11,7 @@ import com.mnc.booking.model.User;
 import com.mnc.booking.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.BeanUtils;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -23,9 +23,9 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import java.util.stream.Collectors;
+import java.util.Optional;
 
-import static com.mnc.booking.config.RoleConstants.GRAND_AUTHORITIES_SEPARATOR;
+import static com.mnc.booking.security.util.RoleConstants.GRAND_AUTHORITIES_SEPARATOR;
 
 @Transactional
 @RequiredArgsConstructor
@@ -51,10 +51,15 @@ public class UserService {
     return savedUser.getUsername();
   }
 
-  public UserDTO getUser(final String username) {
-    return userRepository.findById(username)
-        .map(userMapper::mapToUserDTO)
-        .orElseThrow(() -> new NotFoundException(String.format(USER_NOT_FOUND_ERROR_MSG, username)));
+  public Optional<User> getUser(final String username) {
+    return userRepository.findById(username);
+  }
+
+  public Page<User> getUsers(final Integer pageNumber, final Integer pageSize, final String sortParams) {
+    final Sort sort = Sort.by(sortParamsParser.prepareSortOrderList(sortParams, User.class));
+    final Pageable pageable = PageRequest.of(pageNumber, pageSize, sort);
+
+    return userRepository.findAll(pageable);
   }
 
   public void updateUser(final String username, final UserUpdateDTO userUpdateDTO) {
@@ -83,18 +88,6 @@ public class UserService {
         .orElseThrow(() -> new NotFoundException(String.format(USER_NOT_FOUND_ERROR_MSG, username)));
   }
 
-  public List<UserDTO> getUsers(final Integer pageNumber, final Integer pageSize, final String sortParams, final Boolean xTotalCount) {
-    // TODO: add sort parsing
-    final Sort sort = Sort.by(sortParamsParser.prepareSortOrderList(sortParams));
-    final Pageable pageable = PageRequest.of(pageNumber, pageSize, sort);
-
-    return userRepository.findAll(pageable)
-        .getContent()
-        .stream()
-        .map(userMapper::mapToUserDTO)
-        .collect(Collectors.toList());
-  }
-
   public void deleteUser(final String username) {
     userRepository.deleteById(username);
   }
@@ -116,12 +109,5 @@ public class UserService {
 
     return ignoredProperties.toArray(String[]::new);
   }
-
-//  private User ignoreNullPropertiesOM(final User userUpdate, final User user) throws IOException {
-//    // problem with authorities as a list (probably getter is messing up)
-//    final JsonNode jsonNode = objectMapper.valueToTree(user);
-//    ObjectReader updater = objectMapper.readerForUpdating(userUpdate);
-//    return updater.readValue(jsonNode, User.class);
-//  }
 
 }

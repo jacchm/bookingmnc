@@ -1,4 +1,4 @@
-package com.mnc.booking.config;
+package com.mnc.booking.security.util;
 
 public final class RoleConstants {
   public static final String ROLE_ADMIN = "ROLE_ADMIN";
