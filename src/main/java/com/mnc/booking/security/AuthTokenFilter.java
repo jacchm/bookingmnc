@@ -1,7 +1,8 @@
 package com.mnc.booking.security;
 
+import com.mnc.booking.security.util.HeaderMapRequestWrapper;
+import com.mnc.booking.security.util.JwtTokenProvider;
 import com.mnc.booking.service.UserDetailsServiceImpl;
-import com.mnc.booking.util.JwtTokenProvider;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -9,6 +10,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
+import org.springframework.util.AntPathMatcher;
 import org.springframework.util.StringUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
 
@@ -22,6 +24,9 @@ import java.util.Objects;
 
 @Slf4j
 public class AuthTokenFilter extends OncePerRequestFilter {
+
+  private static final String USERNAME_HEADER = "username";
+  private final AntPathMatcher antPathMatcher = new AntPathMatcher();
 
   private JwtTokenProvider jwtUtils;
   private UserDetailsServiceImpl userDetailsService;
@@ -46,6 +51,7 @@ public class AuthTokenFilter extends OncePerRequestFilter {
   @Override
   protected void doFilterInternal(final HttpServletRequest request, final HttpServletResponse response, final FilterChain filterChain)
       throws ServletException, IOException {
+    final HeaderMapRequestWrapper wrappedRequest = new HeaderMapRequestWrapper(request);
     if (isEnabled) {
       try {
         final String jwt = parseJwt(request);
@@ -56,12 +62,15 @@ public class AuthTokenFilter extends OncePerRequestFilter {
               new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
           authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
           SecurityContextHolder.getContext().setAuthentication(authentication);
+          if (antPathMatcher.match("/me/**", request.getServletPath())) {
+            wrappedRequest.addHeader(USERNAME_HEADER, username);
+          }
         }
       } catch (Exception ex) {
         log.error("Cannot set user authentication: {}", ex.getMessage());
       }
     }
-    filterChain.doFilter(request, response);
+    filterChain.doFilter(wrappedRequest, response);
   }
 
   private String parseJwt(final HttpServletRequest request) {
@@ -71,4 +80,5 @@ public class AuthTokenFilter extends OncePerRequestFilter {
     }
     return null;
   }
+
 }

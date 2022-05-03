@@ -1,4 +1,4 @@
-package com.mnc.booking.util;
+package com.mnc.booking.security.util;
 
 import com.mnc.booking.model.User;
 import io.jsonwebtoken.*;

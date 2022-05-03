@@ -1,6 +1,5 @@
 package com.mnc.booking.service;
 
-import com.mnc.booking.model.User;
 import com.mnc.booking.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -18,6 +17,5 @@ public class UserDetailsServiceImpl implements UserDetailsService {
     return userRepository.findByUsername(username)
         .orElseThrow(() -> new UsernameNotFoundException("User Not Found with username: " + username));
   }
-
 
 }
