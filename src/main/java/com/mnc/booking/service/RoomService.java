@@ -13,7 +13,13 @@ import com.mnc.booking.repository.RoomRepository;
 import com.mnc.booking.repository.URIRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -44,6 +50,15 @@ public class RoomService {
         .orElseThrow(() -> new NotFoundException(String.format(ROOM_NOT_FOUND_ERROR_MSG, roomNo)));
   }
 
+  public List<RoomDTO> getRooms(final Integer pageNumber, final Integer pageSize, final String sort) {
+    final Pageable pageable = PageRequest.of(pageNumber, pageSize, Sort.unsorted());
+    return roomRepository.findAll(pageable)
+                         .getContent()
+                         .stream()
+                         .map(roomMapper::mapToRoomDTO)
+                         .collect(Collectors.toList());
+  }
+
   // TODO: implement URI management later
   public Integer addUri(final URIDTO uriDto) {
     final URI newUri = uriMapper.mapToURI(uriDto);
@@ -51,5 +66,9 @@ public class RoomService {
     final URI savedUri = uriRepository.save(newUri);
     return savedUri.getId();
 
+  }
+
+  public void deleteRoom(final String roomNo) {
+    roomRepository.deleteById(roomNo);
   }
 }

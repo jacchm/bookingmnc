@@ -35,9 +35,12 @@ public class RoomController {
   }
 
   @GetMapping
-  public ResponseEntity<List<Room>> getRooms() {
-    log.info("Rooms fetch request received with params="); // TODO: implement filter and sorting params
-    return ResponseEntity.ok(List.of());
+  public ResponseEntity<List<RoomDTO>> getRooms(@RequestParam(required = false, defaultValue = "1") final Integer pageNumber,
+                                                @RequestParam(required = false, defaultValue = "10") final Integer pageSize,
+                                                @RequestParam(required = false) final String sort) {
+    log.info("Rooms fetch request received with params=");
+    final List<RoomDTO> rooms = roomService.getRooms(pageNumber - 1, pageSize, sort);
+    return ResponseEntity.ok(rooms);
   }
 
   @PutMapping({"{roomNo}"})
@@ -50,7 +53,8 @@ public class RoomController {
   @DeleteMapping({"{roomNo}"})
   public ResponseEntity<Void> deleteRoom(@PathVariable final String roomNo) {
     log.info("Room deletion request received with roomNo={}", roomNo);
-    return ResponseEntity.ok().build();
+    roomService.deleteRoom(roomNo);
+    return ResponseEntity.noContent().build();
   }
 
   // TODO: think about the solution for URIs management
