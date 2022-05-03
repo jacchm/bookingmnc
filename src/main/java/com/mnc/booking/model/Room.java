@@ -23,8 +23,8 @@ public class Room {
   private RoomType roomType;
   @Embedded
   @AttributeOverrides({
-      @AttributeOverride(name = "value", column = @Column(name = "price_per_night_value")),
-      @AttributeOverride(name = "currency", column = @Column(name = "price_per_night_currency"))
+      @AttributeOverride(name = "value", column = @Column(name = "pricepernightvalue")),
+      @AttributeOverride(name = "currency", column = @Column(name = "pricepernightcurrency"))
   })
   private Price pricePerNight;
   private Boolean isBalcony;
@@ -36,8 +36,8 @@ public class Room {
   private Boolean isRestArea;
   @Embedded
   @AttributeOverrides({
-      @AttributeOverride(name = "value", column = @Column(name = "room_size_value")),
-      @AttributeOverride(name = "unit", column = @Column(name = "room_size_currency"))
+      @AttributeOverride(name = "value", column = @Column(name = "roomsizevalue")),
+      @AttributeOverride(name = "unit", column = @Column(name = "roomsizecurrency"))
   })
   private MeasurementUnit roomSize;
   @OneToMany(mappedBy = "roomNo", cascade = CascadeType.ALL)

@@ -1,16 +1,22 @@
 package com.mnc.booking.controller;
 
 import com.mnc.booking.controller.dto.room.*;
+import com.mnc.booking.mapper.RoomMapper;
 import com.mnc.booking.model.Room;
 import com.mnc.booking.service.RoomService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import javax.validation.constraints.Pattern;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -18,7 +24,12 @@ import java.util.List;
 @RestController
 public class RoomController {
 
+  private static final String X_TOTAL_COUNT = "X-TOTAL-COUNT";
+  private static final String FIELD_DIR_REGEX = "[-\\w]+(\\.[-\\w]+)*(:[a-zA-Z]+)?";
+  private static final String SORT_REGEX = "^" + FIELD_DIR_REGEX + "(," + FIELD_DIR_REGEX + ")*$";
+
   private final RoomService roomService;
+  private final RoomMapper roomMapper;
 
   @PostMapping
   public ResponseEntity<RoomCreateResponseDTO> createRoom(@Valid @RequestBody final RoomCreationDTO roomCreationDTO) {
@@ -35,12 +46,19 @@ public class RoomController {
   }
 
   @GetMapping
-  public ResponseEntity<List<RoomDTO>> getRooms(@RequestParam(required = false, defaultValue = "1") final Integer pageNumber,
+  public ResponseEntity<List<RoomDTO>> getRooms(@RequestHeader(name = X_TOTAL_COUNT, required = false, defaultValue = "false") final boolean xTotalCount,
+                                                @RequestParam(required = false, defaultValue = "1") final Integer pageNumber,
                                                 @RequestParam(required = false, defaultValue = "10") final Integer pageSize,
-                                                @RequestParam(required = false) final String sort) {
-    log.info("Rooms fetch request received with params=");
-    final List<RoomDTO> rooms = roomService.getRooms(pageNumber - 1, pageSize, sort);
-    return ResponseEntity.ok(rooms);
+                                                @Pattern(regexp = SORT_REGEX, message = "Sort parameters should be in form of field:direction (ASC/DESC) separated by ',' (comma).")
+                                                @RequestParam(required = false, defaultValue = "") final String sort,
+                                                @RequestParam final Map<String, String> filterParams) {
+    log.info("Rooms fetch request received with params: pageSize={}, pageNumber={}, xTotalCount={}, sortParams={} and filterParams={}", pageSize, pageNumber, xTotalCount, sort, filterParams);
+    final Page<Room> result = roomService.searchRooms(pageNumber - 1, pageSize, sort, filterParams);
+    final List<RoomDTO> rooms = result.getContent().stream().map(roomMapper::mapToRoomDTO).collect(Collectors.toList());
+    final HttpHeaders responseHeaders = new HttpHeaders();
+    responseHeaders.add(X_TOTAL_COUNT, xTotalCount ? String.valueOf(result.getTotalElements()) : null);
+
+    return ResponseEntity.ok().headers(responseHeaders).body(rooms);
   }
 
   @PutMapping({"{roomNo}"})

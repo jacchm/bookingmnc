@@ -37,7 +37,7 @@ public class FilterParamsParser {
     if (!CollectionUtils.isEmpty(filterParams)) {
       return filterParams.entrySet().stream()
           .filter(entry -> mapOfProperties.get(clazz).contains(entry.getKey().toLowerCase()))
-          .collect(Collectors.toMap(entry -> entry.getKey().toLowerCase(), Map.Entry::getValue));
+          .collect(Collectors.toMap(entry -> entry.getKey(), Map.Entry::getValue));
     }
     return filterParams;
   }
