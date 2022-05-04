@@ -3,14 +3,14 @@ package com.mnc.booking.model;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.UpdateTimestamp;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
-import javax.persistence.UniqueConstraint;
+import javax.persistence.*;
+import java.time.Instant;
+import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.stream.Collectors;
@@ -18,7 +18,7 @@ import java.util.stream.Collectors;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-@Table(name = "users",
+@Table(name = "appuser",
     uniqueConstraints = {
         @UniqueConstraint(columnNames = "email")
     })
@@ -28,12 +28,23 @@ public class User implements UserDetails {
   private static final String GRAND_AUTHORITIES_SEPARATOR = ",";
 
   @Id
+  @Column(updatable = false)
   private String username;
   private String email;
   private String password;
   private String name;
   private String surname;
+  private LocalDate dateOfBirth;
   private String authorities;
+  private String phoneNumber;
+  private String photoURI;
+  @Version
+  private int version;
+  @Column(updatable = false)
+  private Instant createdAt;
+  @UpdateTimestamp
+  private Instant modifiedAt;
+
 
   public User(String username, String password, Collection<? extends GrantedAuthority> authorities) {
     this.username = username;
@@ -69,5 +80,10 @@ public class User implements UserDetails {
   @Override
   public boolean isEnabled() {
     return true;
+  }
+
+  @PrePersist
+  public void prePersistCreatedAt() {
+    this.createdAt = Instant.now();
   }
 }

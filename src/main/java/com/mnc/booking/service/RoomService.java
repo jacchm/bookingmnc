@@ -25,9 +25,7 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
-import java.util.Collection;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 import java.util.stream.Collectors;
 
@@ -59,8 +57,8 @@ public class RoomService {
 
   private Specification<Room> buildFilteringQuery(final Map<String, String> filters) {
     final GenericSpecificationsBuilder<Room> builder = new GenericSpecificationsBuilder<>();
-    if(!CollectionUtils.isEmpty(filters)) {
-      filters.forEach((key, value) -> builder.with(roomSpecificationFactory.isEqual(key, value)));
+    if (!CollectionUtils.isEmpty(filters)) {
+      filters.forEach((key, value) -> builder.with(roomSpecificationFactory.isEqual(key, List.of(value), builder)));
     }
 
     return builder.build();
@@ -70,6 +68,7 @@ public class RoomService {
     final Map<String, String> filters = filterParamsParser.prepareFilterParamsMap(filterParams, Room.class);
     final Sort sort = Sort.by(sortParamsParser.prepareSortOrderList(sortParams, Room.class));
     final Pageable pageable = PageRequest.of(pageNumber, pageSize, sort);
+
     return roomRepository.findAll(buildFilteringQuery(filters), pageable);
   }
 
@@ -82,10 +81,10 @@ public class RoomService {
   public List<RoomDTO> getRooms(final Integer pageNumber, final Integer pageSize, final String sort) {
     final Pageable pageable = PageRequest.of(pageNumber, pageSize, Sort.unsorted());
     return roomRepository.findAll(pageable)
-                         .getContent()
-                         .stream()
-                         .map(roomMapper::mapToRoomDTO)
-                         .collect(Collectors.toList());
+        .getContent()
+        .stream()
+        .map(roomMapper::mapToRoomDTO)
+        .collect(Collectors.toList());
   }
 
   // TODO: implement URI management later

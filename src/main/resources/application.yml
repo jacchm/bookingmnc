@@ -5,13 +5,10 @@ spring:
     show-sql: true
     hibernate:
       ddl-auto: update
-      naming:
-        physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
-        implicit-strategy: org.hibernate.boot.model.naming.ImplicitNamingStrategyLegacyJpaImpl
   datasource:
     url: jdbc:postgresql://localhost:5432/booking
     username: postgres
-    password: "icbqo264848"
+    password: "${Password}"
   jackson:
     default-property-inclusion: non_null
     serialization:
@@ -19,6 +16,7 @@ spring:
 ---
 logging:
   level:
+    #    root: DEBUG
     org.hibernate.SQL: DEBUG
     org.hibernate.type: TRACE
 ---

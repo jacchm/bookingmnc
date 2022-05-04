@@ -12,38 +12,38 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
-@Entity(name = "rooms")
+@Entity(name = "room")
 public class Room {
 
   @Id
   private String roomNo;
   private int noPeople;
   private String description;
-  @Enumerated(EnumType.STRING)
-  private RoomType roomType;
+  private String roomType;
+  //  private RoomType roomType;
   @Embedded
   @AttributeOverrides({
-      @AttributeOverride(name = "value", column = @Column(name = "pricepernightvalue")),
-      @AttributeOverride(name = "currency", column = @Column(name = "pricepernightcurrency"))
+      @AttributeOverride(name = "value", column = @Column(name = "price_per_night_value")),
+      @AttributeOverride(name = "currency", column = @Column(name = "price_per_night_currency"))
   })
   private Price pricePerNight;
   private Boolean isBalcony;
   private Boolean isOutstandingView;
   private Boolean isTv;
-  @Enumerated(EnumType.STRING)
-  private BathroomType bathroomType;
+  private String bathroomType;
+  //  private BathroomType bathroomType;
   private Boolean isCoffeeMachine;
   private Boolean isRestArea;
   @Embedded
   @AttributeOverrides({
-      @AttributeOverride(name = "value", column = @Column(name = "roomsizevalue")),
-      @AttributeOverride(name = "unit", column = @Column(name = "roomsizecurrency"))
+      @AttributeOverride(name = "value", column = @Column(name = "room_size_value")),
+      @AttributeOverride(name = "unit", column = @Column(name = "room_size_unit"))
   })
   private MeasurementUnit roomSize;
   @OneToMany(mappedBy = "roomNo", cascade = CascadeType.ALL)
   private List<URI> images;
-  @Enumerated(EnumType.STRING)
-  private Status status;
+  private String status;
+  //  private Status status;
   @Version
   private int version;
   @Column(updatable = false)

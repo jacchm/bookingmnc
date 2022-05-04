@@ -1,8 +1,5 @@
 package com.mnc.booking.controller.dto.room;
 
-import com.mnc.booking.model.BathroomType;
-import com.mnc.booking.model.RoomType;
-import com.mnc.booking.model.Status;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -10,6 +7,7 @@ import javax.validation.Valid;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Pattern;
 import java.util.List;
 
 @NoArgsConstructor
@@ -23,7 +21,9 @@ public class RoomCreationDTO {
   @NotBlank(message = "description must be specified.")
   private String description;
   @NotNull(message = "roomType must be specified.")
-  private RoomType roomType;
+  @Pattern(regexp = "PREMIUM|STANDARD", message = "roomType must be specified. Available room types are PREMIUM and STANDARD.")
+  private String roomType;
+  //  private RoomType roomType;
   @NotNull(message = "pricePerNight must be specified.")
   @Valid
   private PriceDTO pricePerNight;
@@ -34,7 +34,9 @@ public class RoomCreationDTO {
   @NotNull(message = "isTv must be specified.")
   private Boolean isTv;
   @NotNull(message = "bathroomType must be specified.")
-  private BathroomType bathroomType;
+  @Pattern(regexp = "BATH|SHOWER", message = "bathroomType must be specified. Available bathroom types are BATH and SHOWER.")
+  private String bathroomType;
+  //  private BathroomType bathroomType;
   @NotNull(message = "isCoffeeMachine must be specified.")
   private Boolean isCoffeeMachine;
   @NotNull(message = "isRestArea must be specified.")
@@ -46,6 +48,8 @@ public class RoomCreationDTO {
   @Valid
   private List<URIDTO> images;
   @NotNull(message = "status must be specified.")
-  private Status status;
+  @Pattern(regexp = "ACTIVE|INACTIVE", message = "status must be specified. Available statuses are ACTIVE and INACTIVE.")
+  private String status;
+//  private Status status;
 
 }

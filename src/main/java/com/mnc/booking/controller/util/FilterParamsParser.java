@@ -1,45 +1,44 @@
 package com.mnc.booking.controller.util;
 
-import com.mnc.booking.model.Room;
-import com.mnc.booking.model.User;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 
-import javax.annotation.PostConstruct;
-import java.lang.reflect.Field;
-import java.lang.reflect.Modifier;
-import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+@RequiredArgsConstructor
 @Component
 public class FilterParamsParser {
 
-  private Map<Class<?>, List<String>> mapOfProperties;
-
-  @PostConstruct
-  void prepareFieldsMapForEveryEntity() {
-    mapOfProperties = new HashMap<>();
-    mapOfProperties.put(User.class, Arrays.stream(User.class.getDeclaredFields())
-        .filter(field -> !Modifier.isStatic(field.getModifiers()))
-        .map(Field::getName)
-        .map(String::toLowerCase)
-        .toList());
-    mapOfProperties.put(Room.class, Arrays.stream(Room.class.getDeclaredFields())
-        .filter(field -> !Modifier.isStatic(field.getModifiers()))
-        .map(Field::getName).map(String::toLowerCase)
-        .toList());
-  }
+  private final Properties properties;
 
   public Map<String, String> prepareFilterParamsMap(final Map<String, String> filterParams, final Class<?> clazz) {
     if (!CollectionUtils.isEmpty(filterParams)) {
+      final List<String> listOfFieldsLowercase = properties.getMapOfProperties().get(clazz)
+          .stream()
+          .map(String::toLowerCase)
+          .collect(Collectors.toList());
       return filterParams.entrySet().stream()
-          .filter(entry -> mapOfProperties.get(clazz).contains(entry.getKey().toLowerCase()))
-          .collect(Collectors.toMap(entry -> entry.getKey(), Map.Entry::getValue));
+          .filter(entry -> listOfFieldsLowercase.contains(entry.getKey().toLowerCase()))
+          .map(entry -> establishExactFieldName(entry, clazz))
+          .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
     }
     return filterParams;
+  }
+
+
+  private Map.Entry<String, String> establishExactFieldName(final Map.Entry<String, String> entry, final Class<?> clazz) {
+    final List<String> fields = properties.getMapOfProperties().get(clazz);
+    String exactFieldName = entry.getKey();
+    for (String field : fields) {
+      if (field.equalsIgnoreCase(entry.getKey())) {
+        exactFieldName = field;
+        break;
+      }
+    }
+    return Map.entry(exactFieldName, entry.getValue());
   }
 
 }

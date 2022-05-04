@@ -1,9 +1,9 @@
 package com.mnc.booking.service;
 
 import com.mnc.booking.controller.dto.user.UserCreationDTO;
+import com.mnc.booking.controller.dto.user.UserFilterParams;
 import com.mnc.booking.controller.dto.user.UserRolesUpdateDTO;
 import com.mnc.booking.controller.dto.user.UserUpdateDTO;
-import com.mnc.booking.controller.util.FilterParamsParser;
 import com.mnc.booking.controller.util.SortParamsParser;
 import com.mnc.booking.exception.AlreadyExistsException;
 import com.mnc.booking.exception.NotFoundException;
@@ -23,9 +23,12 @@ import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.CollectionUtils;
+import org.springframework.util.ReflectionUtils;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
 
 import static com.mnc.booking.security.util.RoleConstants.GRAND_AUTHORITIES_SEPARATOR;
 
@@ -42,7 +45,6 @@ public class UserService {
   private final UserMapper userMapper;
   private final PasswordEncoder passwordEncoder;
   private final SortParamsParser sortParamsParser;
-  private final FilterParamsParser filterParamsParser;
 
   public String createUser(final UserCreationDTO userCreationDTO) {
     final User newUser = userMapper.mapToUser(userCreationDTO);
@@ -60,13 +62,12 @@ public class UserService {
   }
 
   public Page<User> searchUsers(final Integer pageNumber, final Integer pageSize, final String sortParams,
-                                final Map<String, String> filterParams) {
-    final Map<String, String> filters = filterParamsParser.prepareFilterParamsMap(filterParams, User.class);
+                                final UserFilterParams filterParams) {
 
     final Sort sort = Sort.by(sortParamsParser.prepareSortOrderList(sortParams, User.class));
     final Pageable pageable = PageRequest.of(pageNumber, pageSize, sort);
 
-    return userRepository.findAll(buildFilteringQuery(filters), pageable);
+    return userRepository.findAll(buildFilteringQuery(filterParams), pageable);
   }
 
   public void updateUser(final String username, final UserUpdateDTO userUpdateDTO) {
@@ -99,10 +100,20 @@ public class UserService {
     userRepository.deleteById(username);
   }
 
-  private Specification<User> buildFilteringQuery(final Map<String, String> filters) {
+  private Specification<User> buildFilteringQuery(final UserFilterParams filters) {
     final GenericSpecificationsBuilder<User> builder = new GenericSpecificationsBuilder<>();
-    if (!CollectionUtils.isEmpty(filters)) {
-      filters.forEach((key, value) -> builder.with(userSpecificationFactory.isEqual(key, value)));
+    if (Objects.nonNull(filters)) {
+      ReflectionUtils.doWithFields(UserFilterParams.class,
+          field -> {
+            field.setAccessible(true);
+            if (Objects.nonNull(field.get(filters))) {
+              if (!"role".equals(field.getName())) {
+                builder.with(userSpecificationFactory.isEqual(field.getName(), field.get(filters), builder));
+              } else {
+                builder.with(userSpecificationFactory.isEqual("authorities", field.get(filters), builder));
+              }
+            }
+          });
     }
     return builder.build();
   }
