@@ -1,13 +1,16 @@
 package com.mnc.booking.controller.util;
 
+import com.mnc.booking.model.Room;
+import com.mnc.booking.model.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import javax.annotation.PostConstruct;
+import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
+import java.util.*;
 
 @RequiredArgsConstructor
 @Component
@@ -16,7 +19,20 @@ public class SortParamsParser {
   private static final String SORT_FIELDS_SEPARATOR = ",";
   private static final String SORT_EXPRESSION_SEPARATOR = ":";
 
-  private final Properties properties;
+  public Map<Class<?>, List<String>> mapOfProperties;
+
+  @PostConstruct
+  void prepareFieldsMapForEveryEntity() {
+    mapOfProperties = new HashMap<>();
+    mapOfProperties.put(User.class, Arrays.stream(User.class.getDeclaredFields())
+        .filter(field -> !Modifier.isStatic(field.getModifiers()))
+        .map(Field::getName)
+        .toList());
+    mapOfProperties.put(Room.class, Arrays.stream(Room.class.getDeclaredFields())
+        .filter(field -> !Modifier.isStatic(field.getModifiers()))
+        .map(Field::getName)
+        .toList());
+  }
 
   public List<Sort.Order> prepareSortOrderList(final String sortParams, final Class<?> clazz) {
     final List<Sort.Order> sortParamsList = new ArrayList<>();
@@ -33,7 +49,7 @@ public class SortParamsParser {
         Sort.DEFAULT_DIRECTION.toString().equalsIgnoreCase(sortExpression[1]) ?
         Sort.Direction.ASC : Sort.Direction.DESC;
 
-    if (properties.getMapOfProperties().get(clazz).contains(sortExpression[0].toLowerCase())) {
+    if (mapOfProperties.get(clazz).contains(sortExpression[0].toLowerCase())) {
       sortParams.add(new Sort.Order(sortDirection, sortExpression[0]));
     }
   }

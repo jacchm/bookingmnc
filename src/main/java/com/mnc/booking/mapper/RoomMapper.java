@@ -2,6 +2,7 @@ package com.mnc.booking.mapper;
 
 import com.mnc.booking.controller.dto.room.RoomCreationDTO;
 import com.mnc.booking.controller.dto.room.RoomDTO;
+import com.mnc.booking.controller.dto.room.RoomUpdateDTO;
 import com.mnc.booking.model.Room;
 import org.mapstruct.InjectionStrategy;
 import org.mapstruct.Mapper;
@@ -15,6 +16,8 @@ import org.mapstruct.ReportingPolicy;
 public interface RoomMapper {
 
   Room mapToRoom(final RoomCreationDTO roomCreationDTO);
+
+  Room mapToRoom(final RoomUpdateDTO roomUpdateDTO);
 
   RoomDTO mapToRoomDTO(final Room room);
 

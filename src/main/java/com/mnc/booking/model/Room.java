@@ -19,8 +19,7 @@ public class Room {
   private String roomNo;
   private int noPeople;
   private String description;
-  private String roomType;
-  //  private RoomType roomType;
+  private RoomType roomType;
   @Embedded
   @AttributeOverrides({
       @AttributeOverride(name = "value", column = @Column(name = "price_per_night_value")),
@@ -30,8 +29,7 @@ public class Room {
   private Boolean isBalcony;
   private Boolean isOutstandingView;
   private Boolean isTv;
-  private String bathroomType;
-  //  private BathroomType bathroomType;
+  private BathroomType bathroomType;
   private Boolean isCoffeeMachine;
   private Boolean isRestArea;
   @Embedded
@@ -42,8 +40,7 @@ public class Room {
   private MeasurementUnit roomSize;
   @OneToMany(mappedBy = "roomNo", cascade = CascadeType.ALL)
   private List<URI> images;
-  private String status;
-  //  private Status status;
+  private Status status;
   @Version
   private int version;
   @Column(updatable = false)

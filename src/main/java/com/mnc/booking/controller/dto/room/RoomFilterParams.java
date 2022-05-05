@@ -1,13 +1,16 @@
 package com.mnc.booking.controller.dto.room;
 
-import com.mnc.booking.model.*;
+import com.mnc.booking.model.BathroomType;
+import com.mnc.booking.model.Price;
+import com.mnc.booking.model.RoomType;
+import com.mnc.booking.model.Status;
 import lombok.Data;
 
-import java.util.List;
-
 @Data
-public class RoomUpdateDTO {
-  private int noPeople;
+public class RoomFilterParams {
+
+  private String roomNo;
+  private Integer noPeople;
   private String description;
   private RoomType roomType;
   private Price pricePerNight;
@@ -17,8 +20,7 @@ public class RoomUpdateDTO {
   private BathroomType bathroomType;
   private Boolean isCoffeeMachine;
   private Boolean isRestArea;
-  private MeasurementUnit roomSize;
-  private List<URI> images;
+  //  private MeasurementUnit roomSize;
   private Status status;
-  private int version;
+
 }

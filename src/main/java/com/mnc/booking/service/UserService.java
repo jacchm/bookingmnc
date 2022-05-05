@@ -120,19 +120,12 @@ public class UserService {
 
   private String[] ignoreNullProperties(final User userUpdate) {
     final List<String> ignoredProperties = new ArrayList<>();
-    ignoredProperties.add("username");
-    ignoredProperties.add("password");
-    ignoredProperties.add("authorities");
-    if (Objects.isNull(userUpdate.getEmail())) {
-      ignoredProperties.add("email");
-    }
-    if (Objects.isNull(userUpdate.getName())) {
-      ignoredProperties.add("name");
-    }
-    if (Objects.isNull(userUpdate.getSurname())) {
-      ignoredProperties.add("surname");
-    }
-
+    ReflectionUtils.doWithFields(User.class,
+        field -> {
+          if (Objects.isNull(field.get(userUpdate))) {
+            ignoredProperties.add(field.getName());
+          }
+        });
     return ignoredProperties.toArray(String[]::new);
   }
 

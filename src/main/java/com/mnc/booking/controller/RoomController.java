@@ -15,7 +15,6 @@ import org.springframework.web.bind.annotation.*;
 import javax.validation.Valid;
 import javax.validation.constraints.Pattern;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -51,7 +50,7 @@ public class RoomController {
                                                 @RequestParam(required = false, defaultValue = "10") final Integer pageSize,
                                                 @Pattern(regexp = SORT_REGEX, message = "Sort parameters should be in form of field:direction (ASC/DESC) separated by ',' (comma).")
                                                 @RequestParam(required = false, defaultValue = "") final String sort,
-                                                @RequestParam final Map<String, String> filterParams) {
+                                                @Valid final RoomFilterParams filterParams) {
     log.info("Rooms fetch request received with params: pageSize={}, pageNumber={}, xTotalCount={}, sortParams={} and filterParams={}", pageSize, pageNumber, xTotalCount, sort, filterParams);
     final Page<Room> result = roomService.searchRooms(pageNumber - 1, pageSize, sort, filterParams);
     final List<RoomDTO> rooms = result.getContent().stream().map(roomMapper::mapToRoomDTO).collect(Collectors.toList());
@@ -62,10 +61,12 @@ public class RoomController {
   }
 
   @PutMapping({"{roomNo}"})
-  public ResponseEntity<Room> updateRoom(final String roomNo,
+  public ResponseEntity<Room> updateRoom(@PathVariable final String roomNo,
                                          @RequestBody @Valid final RoomUpdateDTO roomUpdateDto) {
     log.info("Room update request received with roomNo={}, and body={}", roomNo, roomUpdateDto);
-    return ResponseEntity.ok().build();
+    final Room roomUpdate = roomMapper.mapToRoom(roomUpdateDto);
+    roomService.updateRoom(roomNo, roomUpdate);
+    return ResponseEntity.noContent().build();
   }
 
   @DeleteMapping({"{roomNo}"})
