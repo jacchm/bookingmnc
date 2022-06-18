@@ -4,8 +4,9 @@ spring:
   jpa:
     show-sql: true
     hibernate:
-      ddl-auto: update
+      ddl-auto: create-drop
     database: postgresql
+    defer-datasource-initialization: true
   datasource:
     url: jdbc:postgresql://ec2-54-157-16-196.compute-1.amazonaws.com/d70bt103r42qil
     username: gfqchydbarkdgg
@@ -14,10 +15,13 @@ spring:
     default-property-inclusion: non_null
     serialization:
       WRITE_DATES_AS_TIMESTAMPS: false
+  sql:
+    init:
+      mode: always
 ---
 logging:
   level:
-    root: DEBUG
+    #    root: DEBUG
     org.hibernate.SQL: DEBUG
     org.hibernate.type: TRACE
 ---

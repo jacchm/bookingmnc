@@ -35,6 +35,7 @@ public class Room {
   private String roomSizeUnit;
   @OneToMany(mappedBy = "roomNo", cascade = CascadeType.ALL)
   private List<URI> images;
+  @Enumerated(EnumType.STRING)
   private Status status;
   @Version
   private int version;
