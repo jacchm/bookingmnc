@@ -2,27 +2,38 @@ package com.mnc.booking.controller.util;
 
 import com.mnc.booking.model.Room;
 import com.mnc.booking.model.User;
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
 import javax.annotation.PostConstruct;
 import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
 import java.util.*;
 
+@RequiredArgsConstructor
 @Component
 public class SortParamsParser {
 
   private static final String SORT_FIELDS_SEPARATOR = ",";
   private static final String SORT_EXPRESSION_SEPARATOR = ":";
 
-  private Map<Class<?>, List<String>> mapOfProperties;
+  public Map<Class<?>, List<String>> mapOfProperties;
 
   @PostConstruct
-  void prepareFieldsMapForEveryEntity() {
+  public void prepareFieldsMapForEveryEntity() {
     mapOfProperties = new HashMap<>();
-    mapOfProperties.put(User.class, Arrays.stream(User.class.getDeclaredFields()).map(Field::getName).map(String::toLowerCase).toList());
-    mapOfProperties.put(Room.class, Arrays.stream(Room.class.getDeclaredFields()).map(Field::getName).map(String::toLowerCase).toList());
+    mapOfProperties.put(User.class, Arrays.stream(User.class.getDeclaredFields())
+        .filter(field -> !Modifier.isStatic(field.getModifiers()))
+        .map(Field::getName)
+        .map(String::toLowerCase)
+        .toList());
+    mapOfProperties.put(Room.class, Arrays.stream(Room.class.getDeclaredFields())
+        .filter(field -> !Modifier.isStatic(field.getModifiers()))
+        .map(Field::getName)
+        .map(String::toLowerCase)
+        .toList());
   }
 
   public List<Sort.Order> prepareSortOrderList(final String sortParams, final Class<?> clazz) {

@@ -6,13 +6,14 @@ import lombok.NoArgsConstructor;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import javax.persistence.*;
+import java.math.BigDecimal;
 import java.time.Instant;
 import java.util.List;
 
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
-@Entity(name = "rooms")
+@Entity(name = "room")
 public class Room {
 
   @Id
@@ -21,12 +22,8 @@ public class Room {
   private String description;
   @Enumerated(EnumType.STRING)
   private RoomType roomType;
-  @Embedded
-  @AttributeOverrides({
-      @AttributeOverride(name = "value", column = @Column(name = "price_per_night_value")),
-      @AttributeOverride(name = "currency", column = @Column(name = "price_per_night_currency"))
-  })
-  private Price pricePerNight;
+  private BigDecimal pricePerNightValue;
+  private String pricePerNightCurrency;
   private Boolean isBalcony;
   private Boolean isOutstandingView;
   private Boolean isTv;
@@ -34,15 +31,10 @@ public class Room {
   private BathroomType bathroomType;
   private Boolean isCoffeeMachine;
   private Boolean isRestArea;
-  @Embedded
-  @AttributeOverrides({
-      @AttributeOverride(name = "value", column = @Column(name = "room_size_value")),
-      @AttributeOverride(name = "unit", column = @Column(name = "room_size_currency"))
-  })
-  private MeasurementUnit roomSize;
+  private Integer roomSizeValue;
+  private String roomSizeUnit;
   @OneToMany(mappedBy = "roomNo", cascade = CascadeType.ALL)
   private List<URI> images;
-  @Enumerated(EnumType.STRING)
   private Status status;
   @Version
   private int version;

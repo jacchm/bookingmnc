@@ -1,7 +1,10 @@
 package com.mnc.booking.controller;
 
+import com.mnc.booking.controller.dto.user.UserDTO;
 import com.mnc.booking.controller.dto.user.UserPasswordUpdateDTO;
 import com.mnc.booking.controller.dto.user.UserUpdateDTO;
+import com.mnc.booking.exception.NotFoundException;
+import com.mnc.booking.mapper.UserMapper;
 import com.mnc.booking.service.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -16,7 +19,19 @@ import javax.validation.Valid;
 @RequestMapping("/me")
 public class MeController {
 
+  private static final String USER_NOT_FOUND_ERROR_MSG = "User with username=%s has not been found.";
+
   private final UserService userService;
+  private final UserMapper userMapper;
+
+  @GetMapping
+  public ResponseEntity<UserDTO> getMe(@RequestHeader final String username) {
+    log.info("User with username={} get request.", username);
+    final UserDTO userDTO = userService.getUser(username)
+        .map(userMapper::mapToUserDTO)
+        .orElseThrow(() -> new NotFoundException(String.format(USER_NOT_FOUND_ERROR_MSG, username)));
+    return ResponseEntity.ok(userDTO);
+  }
 
   @PutMapping
   public ResponseEntity<Void> updateMe(@RequestHeader final String username,

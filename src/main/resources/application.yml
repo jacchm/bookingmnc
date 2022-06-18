@@ -2,6 +2,7 @@ spring:
   application:
     name: "booking"
   jpa:
+    show-sql: true
     hibernate:
       ddl-auto: update
   datasource:
@@ -15,6 +16,7 @@ spring:
 ---
 logging:
   level:
+    root: DEBUG
     org.hibernate.SQL: DEBUG
     org.hibernate.type: TRACE
 ---

@@ -1,9 +1,6 @@
 package com.mnc.booking.controller;
 
-import com.mnc.booking.controller.dto.user.UserCreateResponseDTO;
-import com.mnc.booking.controller.dto.user.UserCreationDTO;
-import com.mnc.booking.controller.dto.user.UserDTO;
-import com.mnc.booking.controller.dto.user.UserRolesUpdateDTO;
+import com.mnc.booking.controller.dto.user.*;
 import com.mnc.booking.exception.NotFoundException;
 import com.mnc.booking.mapper.UserMapper;
 import com.mnc.booking.model.User;
@@ -19,7 +16,6 @@ import org.springframework.web.bind.annotation.*;
 import javax.validation.Valid;
 import javax.validation.constraints.Pattern;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -49,7 +45,7 @@ public class UserController {
                                                 @RequestParam(required = false, defaultValue = "20") final Integer pageSize,
                                                 @Pattern(regexp = SORT_REGEX, message = "Sort parameters should be in form of field:direction (ASC/DESC) separated by ',' (comma).")
                                                 @RequestParam(required = false) final String sort,
-                                                @RequestParam final Map<String, String> filterParams) {
+                                                @Valid final UserFilterParams filterParams) {
     log.info("Received users search request with params: pageSize={}, pageNumber={}, xTotalCount={}, sortParams={} and filterParams={}", pageSize, pageNumber, xTotalCount, sort, filterParams);
     final Page<User> results = userService.searchUsers(pageNumber - 1, pageSize, sort, filterParams);
     final List<UserDTO> users = results.getContent()
