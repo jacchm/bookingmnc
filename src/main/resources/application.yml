@@ -5,6 +5,7 @@ spring:
     show-sql: true
     hibernate:
       ddl-auto: update
+    database: postgresql
   datasource:
     url: jdbc:postgresql://localhost:5432/booking
     username: postgres
