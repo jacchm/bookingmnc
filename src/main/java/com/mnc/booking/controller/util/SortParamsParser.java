@@ -22,15 +22,17 @@ public class SortParamsParser {
   public Map<Class<?>, List<String>> mapOfProperties;
 
   @PostConstruct
-  void prepareFieldsMapForEveryEntity() {
+  public void prepareFieldsMapForEveryEntity() {
     mapOfProperties = new HashMap<>();
     mapOfProperties.put(User.class, Arrays.stream(User.class.getDeclaredFields())
         .filter(field -> !Modifier.isStatic(field.getModifiers()))
         .map(Field::getName)
+        .map(String::toLowerCase)
         .toList());
     mapOfProperties.put(Room.class, Arrays.stream(Room.class.getDeclaredFields())
         .filter(field -> !Modifier.isStatic(field.getModifiers()))
         .map(Field::getName)
+        .map(String::toLowerCase)
         .toList());
   }
 

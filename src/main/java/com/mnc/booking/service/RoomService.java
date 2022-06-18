@@ -57,8 +57,16 @@ public class RoomService {
 
   public Page<Room> searchRooms(final Integer pageNumber, final Integer pageSize, final String sortParams, final RoomFilterParams filterParams) {
     final Sort sort = Sort.by(sortParamsParser.prepareSortOrderList(sortParams, Room.class));
-    final Pageable pageable = PageRequest.of(pageNumber, pageSize, sort);
+    final Pageable pageable = PageRequest.of(pageNumber - 1, pageSize, sort);
 
+    return roomRepository.findAll(buildFilteringQuery(filterParams), pageable);
+  }
+
+  public Page<Room> findAvailableRooms(final Integer pageNumber, final Integer pageSize, final String sortParams, final RoomFilterParams filterParams) {
+    final Sort sort = Sort.by(sortParamsParser.prepareSortOrderList(sortParams, Room.class));
+    final Pageable pageable = PageRequest.of(pageNumber - 1, pageSize, sort);
+
+    // TODO: add the reservation service to fetch only available rooms within date range
     return roomRepository.findAll(buildFilteringQuery(filterParams), pageable);
   }
 
@@ -82,7 +90,10 @@ public class RoomService {
 
     final URI savedUri = uriRepository.save(newUri);
     return savedUri.getId();
+  }
 
+  public void deleteUri(final Integer uriId) {
+    uriRepository.deleteById(uriId);
   }
 
   public void deleteRoom(final String roomNo) {
@@ -96,7 +107,13 @@ public class RoomService {
           field -> {
             field.setAccessible(true);
             if (Objects.nonNull(field.get(filters))) {
-              builder.with(roomSpecificationFactory.isEqual(field.getName(), field.get(filters), builder));
+              if (field.getName().equals("noPeople") || field.getName().equals("roomSizeValue")) {
+                builder.with(roomSpecificationFactory.isGreaterThanOrEqualTo(field.getName(), (Integer) field.get(filters), builder));
+              } else if (field.getName().equals("pricePerNightValue")) {
+                builder.with(roomSpecificationFactory.isLessThanOrEqualTo(field.getName(), (Integer) field.get(filters), builder));
+              } else {
+                builder.with(roomSpecificationFactory.isEqual(field.getName(), field.get(filters), builder));
+              }
             }
           });
     }

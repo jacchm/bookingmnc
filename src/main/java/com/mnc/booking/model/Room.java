@@ -6,6 +6,7 @@ import lombok.NoArgsConstructor;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import javax.persistence.*;
+import java.math.BigDecimal;
 import java.time.Instant;
 import java.util.List;
 
@@ -19,25 +20,19 @@ public class Room {
   private String roomNo;
   private int noPeople;
   private String description;
+  @Enumerated(EnumType.STRING)
   private RoomType roomType;
-  @Embedded
-  @AttributeOverrides({
-      @AttributeOverride(name = "value", column = @Column(name = "price_per_night_value")),
-      @AttributeOverride(name = "currency", column = @Column(name = "price_per_night_currency"))
-  })
-  private Price pricePerNight;
+  private BigDecimal pricePerNightValue;
+  private String pricePerNightCurrency;
   private Boolean isBalcony;
   private Boolean isOutstandingView;
   private Boolean isTv;
+  @Enumerated(EnumType.STRING)
   private BathroomType bathroomType;
   private Boolean isCoffeeMachine;
   private Boolean isRestArea;
-  @Embedded
-  @AttributeOverrides({
-      @AttributeOverride(name = "value", column = @Column(name = "room_size_value")),
-      @AttributeOverride(name = "unit", column = @Column(name = "room_size_unit"))
-  })
-  private MeasurementUnit roomSize;
+  private Integer roomSizeValue;
+  private String roomSizeUnit;
   @OneToMany(mappedBy = "roomNo", cascade = CascadeType.ALL)
   private List<URI> images;
   private Status status;
