@@ -56,7 +56,7 @@ public class RoomService {
     return savedRoom.getRoomNo();
   }
 
-  public Page<Room> searchRooms(final Integer pageNumber, final Integer pageSize, final String sortParams, final RoomFilterParams filterParams) {
+  public Page<Room> getRooms(final Integer pageNumber, final Integer pageSize, final String sortParams, final RoomFilterParams filterParams) {
     final Sort sort = Sort.by(sortParamsParser.prepareSortOrderList(sortParams, Room.class));
     final Pageable pageable = PageRequest.of(pageNumber - 1, pageSize, sort);
 

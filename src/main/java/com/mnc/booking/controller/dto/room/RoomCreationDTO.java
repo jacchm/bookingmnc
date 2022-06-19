@@ -1,5 +1,6 @@
 package com.mnc.booking.controller.dto.room;
 
+import com.mnc.booking.controller.dto.PriceDTO;
 import com.mnc.booking.model.BathroomType;
 import com.mnc.booking.model.RoomType;
 import com.mnc.booking.model.Status;

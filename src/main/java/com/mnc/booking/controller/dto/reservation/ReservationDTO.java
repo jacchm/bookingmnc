@@ -1,6 +1,6 @@
 package com.mnc.booking.controller.dto.reservation;
 
-import com.mnc.booking.controller.dto.room.PriceDTO;
+import com.mnc.booking.controller.dto.PriceDTO;
 import com.mnc.booking.model.ReservationStatus;
 import lombok.Data;
 

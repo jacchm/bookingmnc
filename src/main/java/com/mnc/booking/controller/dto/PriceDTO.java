@@ -1,4 +1,4 @@
-package com.mnc.booking.controller.dto.room;
+package com.mnc.booking.controller.dto;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -10,7 +10,7 @@ import java.math.BigDecimal;
 @NoArgsConstructor
 @Data
 public class PriceDTO {
-  @Min(value = 1L, message = "price value must be specified.")
+  @Min(value = 0L, message = "price value must be specified.")
   private BigDecimal value;
   @NotNull(message = "price currency must be specified.")
   private String currency;

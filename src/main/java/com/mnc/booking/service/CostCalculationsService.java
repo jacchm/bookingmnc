@@ -22,7 +22,7 @@ public class CostCalculationsService {
 
   public BigDecimal calculateReservationCosts(final Reservation reservation, final Room room) {
     BigDecimal totalCost = BigDecimal.ZERO;
-    final long numberOfDays = ChronoUnit.DAYS.between(reservation.getDateTo(), reservation.getDateFrom()) + 1;
+    final long numberOfDays = ChronoUnit.DAYS.between(reservation.getDateFrom(), reservation.getDateTo()) + 1;
     log.info("number of days between specified instants = {}", numberOfDays);
     log.info("number of people = {}", reservation.getNoPeople());
     totalCost = addCostsIfIncludedInReservation(totalCost, reservation.isBreakfastIncluded(), BREAKFAST_COST_PER_PERSON_PER_DAY);

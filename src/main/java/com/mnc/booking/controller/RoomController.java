@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import javax.validation.constraints.Min;
+import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Pattern;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -39,7 +40,7 @@ public class RoomController {
   }
 
   @GetMapping({"{roomNo}"})
-  public ResponseEntity<RoomDTO> getRoom(@PathVariable final String roomNo) {
+  public ResponseEntity<RoomDTO> getRoom(@PathVariable @NotBlank(message = "Provide a valid roomNo.") final String roomNo) {
     log.info("Room fetch request received with roomNo={}", roomNo);
     final RoomDTO roomDTO = roomService.getRoom(roomNo);
     return ResponseEntity.ok(roomDTO);
@@ -53,7 +54,7 @@ public class RoomController {
                                                 @RequestParam(required = false, defaultValue = "") final String sort,
                                                 @Valid final RoomFilterParams filterParams) {
     log.info("Rooms fetch request received with params: pageSize={}, pageNumber={}, xTotalCount={}, sortParams={} and filterParams={}", pageSize, pageNumber, xTotalCount, sort, filterParams);
-    final Page<Room> result = roomService.searchRooms(pageNumber, pageSize, sort, filterParams);
+    final Page<Room> result = roomService.getRooms(pageNumber, pageSize, sort, filterParams);
     final List<RoomDTO> rooms = result.getContent().stream().map(roomMapper::mapToRoomDTO).collect(Collectors.toList());
     final HttpHeaders responseHeaders = new HttpHeaders();
     responseHeaders.add(X_TOTAL_COUNT, xTotalCount ? String.valueOf(result.getTotalElements()) : null);
