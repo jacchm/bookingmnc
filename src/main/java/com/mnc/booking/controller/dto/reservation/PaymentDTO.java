@@ -10,7 +10,9 @@ import javax.validation.constraints.NotBlank;
 public class PaymentDTO {
 
   @Valid
-  private final PriceDTO payment;
+  private PriceDTO payment;
   @NotBlank(message = "cardNo must be specified.")
-  private final String cardNo;
+  private String cardNo;
+  @NotBlank(message = "username must be specified.")
+  private String username;
 }

@@ -12,7 +12,7 @@ import java.time.temporal.ChronoUnit;
 @Slf4j
 @RequiredArgsConstructor
 @Service
-public class CostCalculationsService {
+public class TotalCostCalculationService {
 
   private static final BigDecimal BREAKFAST_COST_PER_PERSON_PER_DAY = BigDecimal.valueOf(15L); // 15EUR
   private static final BigDecimal DINNER_COST_PER_PERSON_PER_DAY = BigDecimal.valueOf(15L); // 15EUR

@@ -48,7 +48,10 @@ public class ReservationController {
                                                               @Valid final ReservationFilterParams filterParams) {
     log.info("Rooms fetch request received with params: pageSize={}, pageNumber={}, xTotalCount={}, sortParams={} and filterParams={}", pageSize, pageNumber, xTotalCount, sort, filterParams);
     final Page<Reservation> result = reservationService.getReservations(pageNumber, pageSize, sort, filterParams);
-    final List<ReservationDTO> reservations = result.getContent().stream().map(reservationMapper::mapToReservationDTO).collect(Collectors.toList());
+    final List<ReservationDTO> reservations = result.getContent()
+        .stream()
+        .map(reservationMapper::mapToReservationDTO)
+        .collect(Collectors.toList());
     final HttpHeaders responseHeaders = new HttpHeaders();
     responseHeaders.add(X_TOTAL_COUNT, xTotalCount ? String.valueOf(result.getTotalElements()) : null);
 

@@ -33,6 +33,7 @@ import java.util.Objects;
 public class ReservationService {
 
   private static final String RESERVATION_NOT_FOUND_ERROR_MSG = "Reservation with id=%s has not been found.";
+  private static final String RESERVATION_FOR_USER_NOT_FOUND_ERROR_MSG = "Reservation with id=%s for user with username=%s has not been found.";
   private static final String USER_NOT_FOUND_ERROR_MSG = "User with username=%s has not been found. Reservation cannot be proceeded.";
   private static final String ROOM_NOT_FOUND_ERROR_MSG = "Room with roomNo=%s has not been found. Reservation cannot be proceeded.";
   private static final String ROOM_CAPACITY_EXCEEDED_ERROR_MSG = "Room with roomNo=%s has smaller capacity than requested. Reservation cannot be proceeded. Please find another room.";
@@ -42,7 +43,7 @@ public class ReservationService {
 
   private final SortParamsParser sortParamsParser;
   private final SpecificationFactory<Reservation> reservationSpecificationFactory;
-  private final CostCalculationsService costCalculationsService;
+  private final TotalCostCalculationService totalCostCalculationService;
   private final ReservationRepository reservationRepository;
   private final RoomRepository roomRepository;
   private final UserRepository userRepository;
@@ -57,13 +58,14 @@ public class ReservationService {
     throwErrorIfRoomIsNotAvailableForGivenDateRange(
         requestedRoomNo, reservation.getDateFrom(), reservation.getDateTo());
 
-    final BigDecimal totalCost = costCalculationsService.calculateReservationCosts(reservation, requestedRoom);
+    final BigDecimal totalCost = totalCostCalculationService.calculateReservationCosts(reservation, requestedRoom);
     reservation.setTotalCostValue(totalCost);
 
     return reservationRepository.save(reservation).getId();
   }
 
-  public Page<Reservation> getReservations(final Integer pageNumber, final Integer pageSize, final String sortParams, final ReservationFilterParams filterParams) {
+  public Page<Reservation> getReservations(final Integer pageNumber, final Integer pageSize, final String sortParams,
+                                           final ReservationFilterParams filterParams) {
     final Sort sort = Sort.by(sortParamsParser.prepareSortOrderList(sortParams, Room.class));
     final Pageable pageable = PageRequest.of(pageNumber - 1, pageSize, sort);
 
@@ -76,9 +78,11 @@ public class ReservationService {
   }
 
   public void performPayment(final Long reservationId, final PaymentDTO paymentDTO) {
-    final Reservation reservation = reservationRepository.findById(reservationId)
-        .orElseThrow(() -> new NotFoundException(String.format(RESERVATION_NOT_FOUND_ERROR_MSG, reservationId)));
+    final Reservation reservation = reservationRepository.findByIdAndUsername(reservationId, paymentDTO.getUsername())
+        .orElseThrow(() -> new NotFoundException(String.format(
+            RESERVATION_FOR_USER_NOT_FOUND_ERROR_MSG, reservationId, paymentDTO.getUsername())));
     // TODO: here is the place to implement payment via payment service. Payment service should be integrated with real payment platform.
+
     if (!paymentDTO.getPayment().getValue().equals(reservation.getTotalCostValue())) {
       throw new BadRequestException(
           String.format(PAYMENT_WRONG_AMOUNT_ERROR_MSG, paymentDTO.getPayment().getValue(), reservation.getTotalCostValue()));
@@ -99,12 +103,16 @@ public class ReservationService {
             field.setAccessible(true);
             if (Objects.nonNull(field.get(filters))) {
               if (field.getName().equals("minTotalCostValue")) {
-                builder.with(reservationSpecificationFactory.isGreaterThanOrEqualTo("totalCostValue", (BigDecimal) field.get(filters), builder));
+                builder.with(reservationSpecificationFactory.isGreaterThanOrEqualTo(
+                    "totalCostValue", (BigDecimal) field.get(filters), builder));
               } else if (field.getName().equals("maxTotalCostValue")) {
-                builder.with(reservationSpecificationFactory.isLessThanOrEqualTo("totalCostValue", (BigDecimal) field.get(filters), builder));
+                builder.with(reservationSpecificationFactory.isLessThanOrEqualTo(
+                    "totalCostValue", (BigDecimal) field.get(filters), builder));
               } else if (field.getName().equals("activeDate")) {
-                builder.with(reservationSpecificationFactory.isLessThanOrEqualTo("dateFrom", (Instant) field.get(filters), builder));
-                builder.with(reservationSpecificationFactory.isGreaterThanOrEqualTo("dateTo", (Instant) field.get(filters), builder));
+                builder.with(reservationSpecificationFactory.isLessThanOrEqualTo(
+                    "dateFrom", (Instant) field.get(filters), builder));
+                builder.with(reservationSpecificationFactory.isGreaterThanOrEqualTo(
+                    "dateTo", (Instant) field.get(filters), builder));
               } else {
                 builder.with(reservationSpecificationFactory.isEqual(field.getName(), field.get(filters), builder));
               }

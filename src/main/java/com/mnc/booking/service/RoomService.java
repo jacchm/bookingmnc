@@ -45,6 +45,7 @@ public class RoomService {
   private final URIMapper uriMapper;
   private final SortParamsParser sortParamsParser;
   private final SpecificationFactory<Room> roomSpecificationFactory;
+  private final ReservationService reservationService;
 
   public String createRoom(final RoomCreationDTO roomCreationDTO) {
     final Room newRoom = roomMapper.mapToRoom(roomCreationDTO);
@@ -68,6 +69,8 @@ public class RoomService {
     final Pageable pageable = PageRequest.of(pageNumber - 1, pageSize, sort);
 
     // TODO: add the reservation service to fetch only available rooms within date range
+
+
     return roomRepository.findAll(buildFilteringQuery(filterParams), pageable);
   }
 
