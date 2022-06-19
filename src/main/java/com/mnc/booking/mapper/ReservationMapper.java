@@ -17,12 +17,14 @@ public interface ReservationMapper {
 
   @Mapping(source = "dateRange.from", target = "dateFrom")
   @Mapping(source = "dateRange.to", target = "dateTo")
-  @Mapping(source = "status", target = "status", defaultValue = "PENDING")
+  @Mapping(target = "status", constant = "PENDING")
+  @Mapping(target = "totalCostCurrency", constant = "EUR")
   Reservation mapToReservation(final ReservationCreationDTO reservationCreationDTO);
 
   @Mapping(source = "dateFrom", target = "dateRange.from")
   @Mapping(source = "dateTo", target = "dateRange.to")
-  @Mapping(source = "totalCost", target = "dateRange.to")
+  @Mapping(source = "totalCostValue", target = "totalCost.value")
+  @Mapping(source = "totalCostCurrency", target = "totalCost.currency")
   ReservationDTO mapToReservationDTO(final Reservation reservation);
 
 }

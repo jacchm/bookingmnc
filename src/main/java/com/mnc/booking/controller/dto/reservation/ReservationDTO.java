@@ -1,9 +1,10 @@
 package com.mnc.booking.controller.dto.reservation;
 
+import com.mnc.booking.controller.dto.room.PriceDTO;
 import com.mnc.booking.model.ReservationStatus;
+import lombok.Data;
 
-import java.math.BigDecimal;
-
+@Data
 public class ReservationDTO {
 
   private Long id;
@@ -16,8 +17,7 @@ public class ReservationDTO {
   private DateRangeDTO dateRange;
   private boolean parkingIncluded;
   private boolean animalsIncluded;
-  private BigDecimal totalCostValue;
-  private String totalCostCurrency;
+  private PriceDTO totalCost;
   private ReservationStatus status;
 
 }
