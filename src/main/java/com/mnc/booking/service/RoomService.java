@@ -37,6 +37,7 @@ public class RoomService {
 
   private static final String ROOM_ALREADY_EXISTS_ERROR_MSG = "Room with roomNo=%s already exists.";
   private static final String ROOM_NOT_FOUND_ERROR_MSG = "Room with roomNo=%s has not been found.";
+  public static final String ROOM_NO_FIELD = "roomNo";
 
   private final RoomRepository roomRepository;
   private final URIRepository uriRepository;
@@ -73,6 +74,14 @@ public class RoomService {
   public void updateRoom(final String roomNo, final Room roomUpdate) {
     final Room room = roomRepository.findById(roomNo)
         .orElseThrow(() -> new NotFoundException(String.format(ROOM_NOT_FOUND_ERROR_MSG, roomNo)));
+    BeanUtils.copyProperties(roomUpdate, room, ROOM_NO_FIELD);
+
+    roomRepository.save(room);
+  }
+
+  public void partialUpdateRoom(final String roomNo, final Room roomUpdate) {
+    final Room room = roomRepository.findById(roomNo)
+        .orElseThrow(() -> new NotFoundException(String.format(ROOM_NOT_FOUND_ERROR_MSG, roomNo)));
     BeanUtils.copyProperties(roomUpdate, room, ignoreNullProperties(roomUpdate));
 
     roomRepository.save(room);
@@ -82,6 +91,10 @@ public class RoomService {
     return roomRepository.findById(roomNo)
         .map(roomMapper::mapToRoomDTO)
         .orElseThrow(() -> new NotFoundException(String.format(ROOM_NOT_FOUND_ERROR_MSG, roomNo)));
+  }
+
+  public void deleteRoom(final String roomNo) {
+    roomRepository.deleteById(roomNo);
   }
 
   // TODO: implement URI management later
@@ -94,10 +107,6 @@ public class RoomService {
 
   public void deleteUri(final Integer uriId) {
     uriRepository.deleteById(uriId);
-  }
-
-  public void deleteRoom(final String roomNo) {
-    roomRepository.deleteById(roomNo);
   }
 
   private Specification<Room> buildFilteringQuery(final RoomFilterParams filters) {

@@ -86,6 +86,15 @@ public class RoomController {
     return ResponseEntity.noContent().build();
   }
 
+  @PatchMapping({"{roomNo}"})
+  public ResponseEntity<Room> partialUpdateRoom(@PathVariable final String roomNo,
+                                                @RequestBody @Valid final RoomUpdateDTO roomUpdateDto) {
+    log.info("Room partial update request received with roomNo={}, and body={}", roomNo, roomUpdateDto);
+    final Room roomUpdate = roomMapper.mapToRoom(roomUpdateDto);
+    roomService.partialUpdateRoom(roomNo, roomUpdate);
+    return ResponseEntity.noContent().build();
+  }
+
   @DeleteMapping({"{roomNo}"})
   public ResponseEntity<Void> deleteRoom(@PathVariable final String roomNo) {
     log.info("Room deletion request received with roomNo={}", roomNo);

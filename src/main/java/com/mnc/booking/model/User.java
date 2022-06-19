@@ -22,7 +22,8 @@ import java.util.stream.Collectors;
 @NoArgsConstructor
 @Table(name = "appuser",
     uniqueConstraints = {
-        @UniqueConstraint(columnNames = "email")
+        @UniqueConstraint(columnNames = "email"),
+        @UniqueConstraint(columnNames = "username")
     })
 @Entity
 public class User implements UserDetails {
