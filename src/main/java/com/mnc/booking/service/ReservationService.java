@@ -27,6 +27,8 @@ import java.math.BigDecimal;
 import java.time.Instant;
 import java.util.Objects;
 
+import static com.mnc.booking.model.ReservationStatus.*;
+
 @Slf4j
 @RequiredArgsConstructor
 @Service
@@ -34,6 +36,7 @@ public class ReservationService {
 
   private static final String RESERVATION_NOT_FOUND_ERROR_MSG = "Reservation with id=%s has not been found.";
   private static final String RESERVATION_FOR_USER_NOT_FOUND_ERROR_MSG = "Reservation with id=%s for user with username=%s has not been found.";
+  private static final String RESERVATION_STATUS_UPDATE_NOT_ALLOWED_ERROR_MSG = "Reservation with id=%s and current status=%s cannot be transitioned to status=%s. Please check the available transitions.";
   private static final String USER_NOT_FOUND_ERROR_MSG = "User with username=%s has not been found. Reservation cannot be proceeded.";
   private static final String ROOM_NOT_FOUND_ERROR_MSG = "Room with roomNo=%s has not been found. Reservation cannot be proceeded.";
   private static final String ROOM_CAPACITY_EXCEEDED_ERROR_MSG = "Room with roomNo=%s has smaller capacity than requested. Reservation cannot be proceeded. Please find another room.";
@@ -81,7 +84,8 @@ public class ReservationService {
     final Reservation reservation = reservationRepository.findByIdAndUsername(reservationId, paymentDTO.getUsername())
         .orElseThrow(() -> new NotFoundException(String.format(
             RESERVATION_FOR_USER_NOT_FOUND_ERROR_MSG, reservationId, paymentDTO.getUsername())));
-    // TODO: here is the place to implement payment via payment service. Payment service should be integrated with real payment platform.
+    // TODO: here is the place to implement payment via payment service.
+    //  Payment service should be integrated with real payment platform.
 
     if (!paymentDTO.getPayment().getValue().equals(reservation.getTotalCostValue())) {
       throw new BadRequestException(
@@ -93,6 +97,21 @@ public class ReservationService {
     }
     reservation.setStatus(ReservationStatus.PAID);
     reservationRepository.save(reservation);
+  }
+
+  public void updateReservationStatus(final Long reservationId, final ReservationStatus newReservationStatus) {
+    final Reservation reservation = reservationRepository.findById(reservationId)
+        .orElseThrow(() -> new NotFoundException(String.format(RESERVATION_NOT_FOUND_ERROR_MSG, reservationId)));
+    final ReservationStatus currentStatus = reservation.getStatus();
+
+    if ((PENDING.equals(currentStatus) && !PAID.equals(newReservationStatus)) ||
+        (PAID.equals(currentStatus) && !REJECTED.equals(newReservationStatus) && !ACCEPTED.equals(newReservationStatus)) ||
+        (REJECTED.equals(currentStatus) && !PENDING.equals(newReservationStatus))) {
+      throw new BadRequestException(
+          String.format(RESERVATION_STATUS_UPDATE_NOT_ALLOWED_ERROR_MSG, reservationId, currentStatus, newReservationStatus));
+    }
+
+    reservationRepository.setReservationStatus(reservationId, newReservationStatus);
   }
 
   private Specification<Reservation> buildFilteringQuery(final ReservationFilterParams filters) {

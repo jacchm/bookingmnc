@@ -103,7 +103,7 @@ public class MeController {
     return ResponseEntity.ok().headers(responseHeaders).body(reservations);
   }
 
-  @PostMapping("/reservations/{reservationId}")
+  @PostMapping("/reservations/{reservationId}/payment")
   public ResponseEntity<ReservationDTO> payForReservation(@PathVariable @Min(value = 1, message = "Provide a valid reservationId") final Long reservationId,
                                                           @Valid @RequestBody final PaymentDTO paymentDTO,
                                                           @RequestHeader final String username) {
