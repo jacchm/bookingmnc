@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import javax.validation.constraints.Min;
+import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Pattern;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -39,7 +40,7 @@ public class RoomController {
   }
 
   @GetMapping({"{roomNo}"})
-  public ResponseEntity<RoomDTO> getRoom(@PathVariable final String roomNo) {
+  public ResponseEntity<RoomDTO> getRoom(@PathVariable @NotBlank(message = "Provide a valid roomNo.") final String roomNo) {
     log.info("Room fetch request received with roomNo={}", roomNo);
     final RoomDTO roomDTO = roomService.getRoom(roomNo);
     return ResponseEntity.ok(roomDTO);
@@ -53,7 +54,7 @@ public class RoomController {
                                                 @RequestParam(required = false, defaultValue = "") final String sort,
                                                 @Valid final RoomFilterParams filterParams) {
     log.info("Rooms fetch request received with params: pageSize={}, pageNumber={}, xTotalCount={}, sortParams={} and filterParams={}", pageSize, pageNumber, xTotalCount, sort, filterParams);
-    final Page<Room> result = roomService.searchRooms(pageNumber, pageSize, sort, filterParams);
+    final Page<Room> result = roomService.getRooms(pageNumber, pageSize, sort, filterParams);
     final List<RoomDTO> rooms = result.getContent().stream().map(roomMapper::mapToRoomDTO).collect(Collectors.toList());
     final HttpHeaders responseHeaders = new HttpHeaders();
     responseHeaders.add(X_TOTAL_COUNT, xTotalCount ? String.valueOf(result.getTotalElements()) : null);
@@ -83,6 +84,15 @@ public class RoomController {
     log.info("Room update request received with roomNo={}, and body={}", roomNo, roomUpdateDto);
     final Room roomUpdate = roomMapper.mapToRoom(roomUpdateDto);
     roomService.updateRoom(roomNo, roomUpdate);
+    return ResponseEntity.noContent().build();
+  }
+
+  @PatchMapping({"{roomNo}"})
+  public ResponseEntity<Room> partialUpdateRoom(@PathVariable final String roomNo,
+                                                @RequestBody @Valid final RoomUpdateDTO roomUpdateDto) {
+    log.info("Room partial update request received with roomNo={}, and body={}", roomNo, roomUpdateDto);
+    final Room roomUpdate = roomMapper.mapToRoom(roomUpdateDto);
+    roomService.partialUpdateRoom(roomNo, roomUpdate);
     return ResponseEntity.noContent().build();
   }
 

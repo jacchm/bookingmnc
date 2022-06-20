@@ -1,5 +1,6 @@
 package com.mnc.booking.controller.util;
 
+import com.mnc.booking.model.Reservation;
 import com.mnc.booking.model.Room;
 import com.mnc.booking.model.User;
 import lombok.RequiredArgsConstructor;
@@ -30,6 +31,11 @@ public class SortParamsParser {
         .map(String::toLowerCase)
         .toList());
     mapOfProperties.put(Room.class, Arrays.stream(Room.class.getDeclaredFields())
+        .filter(field -> !Modifier.isStatic(field.getModifiers()))
+        .map(Field::getName)
+        .map(String::toLowerCase)
+        .toList());
+    mapOfProperties.put(Reservation.class, Arrays.stream(Room.class.getDeclaredFields())
         .filter(field -> !Modifier.isStatic(field.getModifiers()))
         .map(Field::getName)
         .map(String::toLowerCase)

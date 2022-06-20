@@ -1,6 +1,6 @@
 package com.mnc.booking.mapper;
 
-import com.mnc.booking.controller.dto.room.PriceDTO;
+import com.mnc.booking.controller.dto.PriceDTO;
 import com.mnc.booking.model.Price;
 import org.mapstruct.Mapper;
 

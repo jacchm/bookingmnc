@@ -2,6 +2,7 @@ package com.mnc.booking.controller.exception.handling;
 
 import com.mnc.booking.controller.dto.ErrorResponseDTO;
 import com.mnc.booking.exception.AlreadyExistsException;
+import com.mnc.booking.exception.BadRequestException;
 import com.mnc.booking.exception.InvalidTokenException;
 import com.mnc.booking.exception.NotFoundException;
 import org.springframework.context.support.DefaultMessageSourceResolvable;
@@ -113,6 +114,19 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         .timestamp(Instant.now())
         .message(VALIDATION_ERROR_MSG)
         .details(getDetails(ex))
+        .build();
+
+    return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
+  }
+
+  @ExceptionHandler(BadRequestException.class)
+  public ResponseEntity<ErrorResponseDTO> handleDataIntegrityViolationException(final BadRequestException exception) {
+
+    final ErrorResponseDTO errorResponse = ErrorResponseDTO.builder()
+        .code(HttpStatus.BAD_REQUEST.value())
+        .status(HttpStatus.BAD_REQUEST.getReasonPhrase())
+        .timestamp(Instant.now())
+        .message(exception.getMessage())
         .build();
 
     return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);

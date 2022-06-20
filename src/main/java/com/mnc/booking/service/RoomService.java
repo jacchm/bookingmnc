@@ -37,6 +37,7 @@ public class RoomService {
 
   private static final String ROOM_ALREADY_EXISTS_ERROR_MSG = "Room with roomNo=%s already exists.";
   private static final String ROOM_NOT_FOUND_ERROR_MSG = "Room with roomNo=%s has not been found.";
+  public static final String ROOM_NO_FIELD = "roomNo";
 
   private final RoomRepository roomRepository;
   private final URIRepository uriRepository;
@@ -44,6 +45,7 @@ public class RoomService {
   private final URIMapper uriMapper;
   private final SortParamsParser sortParamsParser;
   private final SpecificationFactory<Room> roomSpecificationFactory;
+  private final ReservationService reservationService;
 
   public String createRoom(final RoomCreationDTO roomCreationDTO) {
     final Room newRoom = roomMapper.mapToRoom(roomCreationDTO);
@@ -55,7 +57,7 @@ public class RoomService {
     return savedRoom.getRoomNo();
   }
 
-  public Page<Room> searchRooms(final Integer pageNumber, final Integer pageSize, final String sortParams, final RoomFilterParams filterParams) {
+  public Page<Room> getRooms(final Integer pageNumber, final Integer pageSize, final String sortParams, final RoomFilterParams filterParams) {
     final Sort sort = Sort.by(sortParamsParser.prepareSortOrderList(sortParams, Room.class));
     final Pageable pageable = PageRequest.of(pageNumber - 1, pageSize, sort);
 
@@ -67,10 +69,20 @@ public class RoomService {
     final Pageable pageable = PageRequest.of(pageNumber - 1, pageSize, sort);
 
     // TODO: add the reservation service to fetch only available rooms within date range
+
+
     return roomRepository.findAll(buildFilteringQuery(filterParams), pageable);
   }
 
   public void updateRoom(final String roomNo, final Room roomUpdate) {
+    final Room room = roomRepository.findById(roomNo)
+        .orElseThrow(() -> new NotFoundException(String.format(ROOM_NOT_FOUND_ERROR_MSG, roomNo)));
+    BeanUtils.copyProperties(roomUpdate, room, ROOM_NO_FIELD);
+
+    roomRepository.save(room);
+  }
+
+  public void partialUpdateRoom(final String roomNo, final Room roomUpdate) {
     final Room room = roomRepository.findById(roomNo)
         .orElseThrow(() -> new NotFoundException(String.format(ROOM_NOT_FOUND_ERROR_MSG, roomNo)));
     BeanUtils.copyProperties(roomUpdate, room, ignoreNullProperties(roomUpdate));
@@ -84,6 +96,10 @@ public class RoomService {
         .orElseThrow(() -> new NotFoundException(String.format(ROOM_NOT_FOUND_ERROR_MSG, roomNo)));
   }
 
+  public void deleteRoom(final String roomNo) {
+    roomRepository.deleteById(roomNo);
+  }
+
   // TODO: implement URI management later
   public Integer addUri(final URIDTO uriDto) {
     final URI newUri = uriMapper.mapToURI(uriDto);
@@ -94,10 +110,6 @@ public class RoomService {
 
   public void deleteUri(final Integer uriId) {
     uriRepository.deleteById(uriId);
-  }
-
-  public void deleteRoom(final String roomNo) {
-    roomRepository.deleteById(roomNo);
   }
 
   private Specification<Room> buildFilteringQuery(final RoomFilterParams filters) {

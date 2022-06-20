@@ -9,7 +9,7 @@ import java.time.Instant;
 @Data
 public class RoomSearchParams extends RoomFilterParams {
 
-  private Instant dateFrom; // TODO: add filtering by this field
-  private Instant dateTo;
+  private Instant availableFrom;
+  private Instant availableTo;
 
 }
