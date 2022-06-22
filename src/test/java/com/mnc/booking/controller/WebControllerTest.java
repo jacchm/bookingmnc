@@ -1,21 +1,23 @@
 package com.mnc.booking.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.mnc.booking.model.User;
 import com.mnc.booking.repository.UserRepository;
-import org.junit.jupiter.api.BeforeEach;
+import io.zonky.test.db.AutoConfigureEmbeddedDatabase;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.context.ApplicationContext;
+
+import java.util.Optional;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-@AutoConfigureMockMvc
+//@Sql({"test-data.sql"})
+@AutoConfigureEmbeddedDatabase
+//@AutoConfigureMockMvc
 class WebControllerTest {
-
-
-  @Autowired
-  private MockMvc mockMvc;
 
   @Autowired
   private UserRepository userRepository;
@@ -23,10 +25,9 @@ class WebControllerTest {
   @Autowired
   private ObjectMapper objectMapper;
 
-  @BeforeEach
-  void setup() {
-    userRepository.deleteAll();
-  }
+  @Autowired
+  private ApplicationContext applicationContext;
+
 
   @Test
   public void givenEmployeeObject_whenCreateEmployee_thenReturnSavedEmployee() throws Exception {
@@ -53,6 +54,17 @@ class WebControllerTest {
 //        .andExpect(jsonPath("$.email",
 //            is(employee.getEmail())));
 
+  }
+
+  @Test
+  public void testEmbeddedDatabase() {
+    Optional<User> userOptional = userRepository.findByUsername("admin");
+
+    assertThat(userOptional).hasValueSatisfying(user -> {
+      assertThat(user.getUsername()).isNotNull();
+      assertThat(user.getName()).isEqualTo("Admin");
+      assertThat(user.getSurname()).isEqualTo("Administrator");
+    });
   }
 
 
