@@ -1,5 +1,6 @@
 package com.mnc.booking.service;
 
+import com.mnc.booking.controller.dto.reservation.DateRangeDTO;
 import com.mnc.booking.controller.dto.reservation.PaymentDTO;
 import com.mnc.booking.controller.dto.reservation.ReservationFilterParams;
 import com.mnc.booking.controller.util.SortParamsParser;
@@ -25,7 +26,10 @@ import org.springframework.util.ReflectionUtils;
 
 import java.math.BigDecimal;
 import java.time.Instant;
+import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 import static com.mnc.booking.model.ReservationStatus.*;
 
@@ -159,11 +163,21 @@ public class ReservationService {
         .orElseThrow(() -> new BadRequestException(String.format(ROOM_NOT_FOUND_ERROR_MSG, roomNo)));
   }
 
-  private boolean throwErrorIfRoomIsNotAvailableForGivenDateRange(final String requestedRoomNo, final Instant dateFrom,
-                                                                  final Instant dateTo) {
+  private void throwErrorIfRoomIsNotAvailableForGivenDateRange(final String requestedRoomNo, final Instant dateFrom,
+                                                               final Instant dateTo) {
     if (reservationRepository.findReservationByDateRange(dateFrom, dateTo, requestedRoomNo) != 0) {
       throw new BadRequestException(String.format(ROOM_NOT_AVAILABLE_FOUND_ERROR_MSG, requestedRoomNo));
     }
-    return true;
   }
+
+  public List<DateRangeDTO> getUnavailabilityForRoom(final String roomNo) {
+    final Optional<List<Reservation>> reservationsForRoom = reservationRepository.findAllPaidAndAcceptedReservationsForRoom(roomNo, Instant.now());
+    return reservationsForRoom.map(reservations ->
+            reservations
+                .stream()
+                .map(reservation -> DateRangeDTO.of(reservation.getDateFrom(), reservation.getDateTo()))
+                .collect(Collectors.toList()))
+        .orElse(List.of());
+  }
+
 }

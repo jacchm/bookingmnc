@@ -1,5 +1,6 @@
 package com.mnc.booking.service;
 
+import com.mnc.booking.controller.dto.reservation.DateRangeDTO;
 import com.mnc.booking.controller.dto.room.RoomCreationDTO;
 import com.mnc.booking.controller.dto.room.RoomDTO;
 import com.mnc.booking.controller.dto.room.RoomFilterParams;
@@ -110,6 +111,14 @@ public class RoomService {
 
   public void deleteUri(final Integer uriId) {
     uriRepository.deleteById(uriId);
+  }
+
+  public List<DateRangeDTO> getRoomUnavailabilityDateRanges(final String roomNo) {
+    if (!roomRepository.existsById(roomNo)) {
+      throw new NotFoundException(String.format(ROOM_NOT_FOUND_ERROR_MSG, roomNo));
+    }
+
+    return reservationService.getUnavailabilityForRoom(roomNo);
   }
 
   private Specification<Room> buildFilteringQuery(final RoomFilterParams filters) {

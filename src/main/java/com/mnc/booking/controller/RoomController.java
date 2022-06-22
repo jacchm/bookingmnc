@@ -1,5 +1,6 @@
 package com.mnc.booking.controller;
 
+import com.mnc.booking.controller.dto.reservation.DateRangeDTO;
 import com.mnc.booking.controller.dto.room.*;
 import com.mnc.booking.mapper.RoomMapper;
 import com.mnc.booking.model.Room;
@@ -101,6 +102,13 @@ public class RoomController {
     log.info("Room deletion request received with roomNo={}", roomNo);
     roomService.deleteRoom(roomNo);
     return ResponseEntity.noContent().build();
+  }
+
+  @GetMapping({"{roomNo}/unavailability"})
+  public ResponseEntity<List<DateRangeDTO>> getRoomUnavailability(@PathVariable @NotBlank(message = "Provide a valid roomNo.") final String roomNo) {
+    log.info("Room unavailability fetch request received with roomNo={}", roomNo);
+    final List<DateRangeDTO> dateRangeDTOs = roomService.getRoomUnavailabilityDateRanges(roomNo);
+    return ResponseEntity.ok(dateRangeDTOs);
   }
 
   @PostMapping("{roomNo}/uris")

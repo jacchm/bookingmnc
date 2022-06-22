@@ -8,7 +8,7 @@ public class UserUpdateDTO {
   private String email;
   private String name;
   private String surname;
-  private String dateOfBirth;
+  private String dateOfBirth; // TODO why not LocalDate?
   private String phoneNumber;
   private String photoURI;
 }
