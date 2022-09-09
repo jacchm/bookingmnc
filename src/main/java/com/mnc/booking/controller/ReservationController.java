@@ -3,6 +3,7 @@ package com.mnc.booking.controller;
 import com.mnc.booking.controller.dto.reservation.*;
 import com.mnc.booking.mapper.ReservationMapper;
 import com.mnc.booking.model.Reservation;
+import com.mnc.booking.model.ReservationStatus;
 import com.mnc.booking.service.ReservationService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -66,12 +67,21 @@ public class ReservationController {
     return ResponseEntity.ok(reservationDTO);
   }
 
-  @PostMapping("/{reservationId}")
+  @PostMapping("/{reservationId}/payment")
   public ResponseEntity<ReservationDTO> payForReservation(@PathVariable @Min(value = 1, message = "Provide a valid reservationId") final Long reservationId,
                                                           @Valid @RequestBody final PaymentDTO paymentDTO) {
     log.info("Pay for reservation request received for reservationId={}", reservationId);
 
     reservationService.performPayment(reservationId, paymentDTO);
+    return ResponseEntity.ok().build();
+  }
+
+  @PatchMapping("/{reservationId}")
+  public ResponseEntity<ReservationDTO> updateReservationStatus(@PathVariable @Min(value = 1, message = "Provide a valid reservationId") final Long reservationId,
+                                                                @Valid @RequestBody final ReservationStatusUpdateDTO reservationStatusUpdateDTO) {
+    log.info("Update reservation's status to={} received for reservationId={}", reservationStatusUpdateDTO.getStatus(), reservationId);
+    final ReservationStatus newReservationStatus = ReservationStatus.valueOf(reservationStatusUpdateDTO.getStatus());
+    reservationService.updateReservationStatus(reservationId, newReservationStatus);
     return ResponseEntity.ok().build();
   }
 

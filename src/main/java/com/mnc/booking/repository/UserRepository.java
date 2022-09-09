@@ -21,7 +21,7 @@ public interface UserRepository extends JpaRepository<User, String>, JpaSpecific
   Optional<Integer> updateUserPasswordByUsername(final String username, final String oldPassword, final String newPassword);
 
   @Modifying
-  @Query(nativeQuery = true, value = "DELETE FROM users WHERE username = ?1")
+  @Query(nativeQuery = true, value = "DELETE FROM appuser WHERE username = ?1")
   void deleteById(final String username);
 
 }

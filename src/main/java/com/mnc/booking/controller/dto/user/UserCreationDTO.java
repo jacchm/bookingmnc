@@ -25,7 +25,6 @@ public class UserCreationDTO {
   @Pattern(regexp = "^\\d{4}\\-(0[1-9]|1[012])\\-(0[1-9]|[12][0-9]|3[01])$", message = "dateOfBirth must be correct and in format of YYYY-MM-DD")
   private String dateOfBirth;
   @NotBlank(message = "phone number cannot be null neither empty.")
-  // https://stackoverflow.com/questions/8634139/phone-validation-regex
   @Pattern(regexp = "^([+]?[\\s0-9]+)?(\\d{3}|[(]?[0-9]+[)])?([-]?[\\s]?[0-9])+$")
   private String phoneNumber;
   private String photoURI;
