@@ -17,6 +17,8 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
+import javax.validation.ConstraintViolation;
+import javax.validation.ConstraintViolationException;
 import java.time.Instant;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -100,6 +102,22 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         .status(HttpStatus.UNAUTHORIZED.getReasonPhrase())
         .timestamp(Instant.now())
         .message(exception.getMessage())
+        .build();
+
+    return new ResponseEntity<>(errorResponse, HttpStatus.UNAUTHORIZED);
+  }
+
+  @ExceptionHandler(ConstraintViolationException.class)
+  public ResponseEntity<ErrorResponseDTO> handleDataIntegrityViolationException(final ConstraintViolationException exception) {
+
+    final ErrorResponseDTO errorResponse = ErrorResponseDTO.builder()
+        .code(HttpStatus.BAD_REQUEST.value())
+        .status(HttpStatus.BAD_REQUEST.getReasonPhrase())
+        .timestamp(Instant.now())
+        .message(exception.getMessage())
+        .details(exception.getConstraintViolations().stream()
+            .map(ConstraintViolation::getMessage)
+            .collect(Collectors.toList()))
         .build();
 
     return new ResponseEntity<>(errorResponse, HttpStatus.UNAUTHORIZED);

@@ -12,6 +12,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.lang.Nullable;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -33,6 +34,7 @@ public class RoomController {
   private static final String X_TOTAL_COUNT = "X-TOTAL-COUNT";
   private static final String FIELD_DIR_REGEX = "[-\\w]+(\\.[-\\w]+)*(:[a-zA-Z]+)?";
   private static final String SORT_REGEX = "^" + FIELD_DIR_REGEX + "(," + FIELD_DIR_REGEX + ")*$";
+  private static final String FULL_SORT_REGEX = SORT_REGEX + "|^$";
 
   private final RoomService roomService;
   private final RoomMapper roomMapper;
@@ -55,7 +57,7 @@ public class RoomController {
   public ResponseEntity<List<RoomDTO>> getRooms(@RequestHeader(name = X_TOTAL_COUNT, required = false, defaultValue = "false") final boolean xTotalCount,
                                                 @RequestParam(required = false, defaultValue = "1") final Integer pageNumber,
                                                 @RequestParam(required = false, defaultValue = "10") final Integer pageSize,
-                                                @Pattern(regexp = SORT_REGEX, message = "Sort parameters should be in form of field:direction (ASC/DESC) separated by ',' (comma).")
+                                                @Pattern(regexp = FULL_SORT_REGEX, message = "Sort parameters should be in form of field:direction (ASC/DESC) separated by ',' (comma).")
                                                 @RequestParam(required = false, defaultValue = "") final String sort,
                                                 @Valid final RoomFilterParams filterParams) {
     log.info("Rooms fetch request received with params: pageSize={}, pageNumber={}, xTotalCount={}, sortParams={} and filterParams={}", pageSize, pageNumber, xTotalCount, sort, filterParams);
@@ -71,7 +73,7 @@ public class RoomController {
   public ResponseEntity<List<RoomDTO>> findAvailableRooms(@RequestHeader(name = X_TOTAL_COUNT, required = false, defaultValue = "false") final boolean xTotalCount,
                                                           @RequestParam(required = false, defaultValue = "1") final Integer pageNumber,
                                                           @RequestParam(required = false, defaultValue = "10") final Integer pageSize,
-                                                          @Pattern(regexp = SORT_REGEX, message = "Sort parameters should be in form of field:direction (ASC/DESC) separated by ',' (comma).")
+                                                          @Nullable @Pattern(regexp = FULL_SORT_REGEX, message = "Sort parameters should be in form of field:direction (ASC/DESC) separated by ',' (comma).")
                                                           @RequestParam(required = false, defaultValue = "") final String sort,
                                                           @Valid final RoomSearchParams filterParams) {
     log.info("Rooms find request received with params: pageSize={}, pageNumber={}, xTotalCount={}, sortParams={} and filterParams={}", pageSize, pageNumber, xTotalCount, sort, filterParams);
