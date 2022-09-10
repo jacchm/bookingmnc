@@ -2,6 +2,7 @@ package com.mnc.booking.controller;
 
 import com.mnc.booking.controller.dto.reservation.DateRangeDTO;
 import com.mnc.booking.controller.dto.room.*;
+import com.mnc.booking.controller.dto.validation.URICreation;
 import com.mnc.booking.mapper.RoomMapper;
 import com.mnc.booking.model.Room;
 import com.mnc.booking.service.RoomService;
@@ -11,15 +12,18 @@ import org.springframework.data.domain.Page;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Pattern;
+import javax.validation.groups.Default;
 import java.util.List;
 import java.util.stream.Collectors;
 
+@Validated
 @Slf4j
 @RequiredArgsConstructor
 @RequestMapping("rooms")
@@ -34,7 +38,7 @@ public class RoomController {
   private final RoomMapper roomMapper;
 
   @PostMapping
-  public ResponseEntity<RoomCreateResponseDTO> createRoom(@Valid @RequestBody final RoomCreationDTO roomCreationDTO) {
+  public ResponseEntity<RoomCreateResponseDTO> createRoom(@Validated(value = {Default.class}) @RequestBody final RoomCreationDTO roomCreationDTO) {
     log.info("Room creation request received with roomCreationDto={}", roomCreationDTO);
     final String roomNo = roomService.createRoom(roomCreationDTO);
     return new ResponseEntity<>(RoomCreateResponseDTO.of(roomNo), HttpStatus.CREATED);
@@ -113,7 +117,7 @@ public class RoomController {
 
   @PostMapping("{roomNo}/uris")
   public ResponseEntity<URICreateResponseDTO> addUri(@PathVariable final String roomNo,
-                                                     @Valid @RequestBody final URIDTO uriDto) {
+                                                     @Validated(value = {Default.class, URICreation.class}) @RequestBody final URIDTO uriDto) {
     log.info("URI creation request received for roomNo={} with uriDto={}", roomNo, uriDto);
     final Integer uriId = roomService.addUri(uriDto);
     return new ResponseEntity<>(URICreateResponseDTO.of(uriId), HttpStatus.CREATED);
