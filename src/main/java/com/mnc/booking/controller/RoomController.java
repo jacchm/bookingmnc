@@ -86,7 +86,7 @@ public class RoomController {
   }
 
   @PutMapping({"{roomNo}"})
-  public ResponseEntity<Room> updateRoom(@PathVariable final String roomNo,
+  public ResponseEntity<Void> updateRoom(@PathVariable final String roomNo,
                                          @RequestBody @Valid final RoomUpdateDTO roomUpdateDto) {
     log.info("Room update request received with roomNo={}, and body={}", roomNo, roomUpdateDto);
     final Room roomUpdate = roomMapper.mapToRoom(roomUpdateDto);
@@ -95,7 +95,7 @@ public class RoomController {
   }
 
   @PatchMapping({"{roomNo}"})
-  public ResponseEntity<Room> partialUpdateRoom(@PathVariable final String roomNo,
+  public ResponseEntity<Void> partialUpdateRoom(@PathVariable final String roomNo,
                                                 @RequestBody @Valid final RoomUpdateDTO roomUpdateDto) {
     log.info("Room partial update request received with roomNo={}, and body={}", roomNo, roomUpdateDto);
     final Room roomUpdate = roomMapper.mapToRoom(roomUpdateDto);

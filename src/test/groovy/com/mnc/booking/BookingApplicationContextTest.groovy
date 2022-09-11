@@ -4,6 +4,9 @@ import com.mnc.booking.model.URI
 import com.mnc.booking.repository.URIRepository
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
+import org.springframework.boot.web.server.LocalServerPort
+import org.springframework.core.env.Environment
+import org.springframework.web.context.WebApplicationContext
 import org.testcontainers.containers.PostgreSQLContainer
 import org.testcontainers.spock.Testcontainers
 import spock.lang.Shared
@@ -18,6 +21,15 @@ import spock.lang.Specification
 @Testcontainers
 class BookingApplicationContextTest extends Specification {
 
+    @LocalServerPort
+    int randomServerPort
+
+    @Autowired
+    private WebApplicationContext webApplicationContext
+
+    @Autowired
+    private Environment environment
+
     @Autowired
     URIRepository uriRepository
 
@@ -30,14 +42,6 @@ class BookingApplicationContextTest extends Specification {
     def setup() {
         uriRepository.deleteAll()
     }
-
-    // below works only for static postgres container
-//    @DynamicPropertySource
-//    static void configureTestcontainersProperties (DynamicPropertyRegistry registry) {
-//        registry.add("spring.datasource.url", () -> postgreSQLContainer.getJdbcUrl())
-//        registry.add("spring.datasource.username", () -> postgreSQLContainer.getUsername())
-//        registry.add("spring.datasource.password", () -> postgreSQLContainer.getPassword())
-//    }
 
     def "contextLoads"() {
         expect:

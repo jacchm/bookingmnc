@@ -103,6 +103,10 @@ public class RoomService {
 
   // TODO: implement URI management later
   public Integer addUri(final URIDTO uriDto) {
+    final String roomNo = uriDto.getRoomNo();
+    if (!roomRepository.existsById(roomNo)) {
+      throw new NotFoundException(String.format(ROOM_NOT_FOUND_ERROR_MSG, roomNo));
+    }
     final URI newUri = uriMapper.mapToURI(uriDto);
 
     final URI savedUri = uriRepository.save(newUri);
