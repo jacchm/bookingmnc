@@ -1,5 +1,6 @@
 package com.mnc.booking.controller
 
+import com.mnc.booking.controller.dto.auth.AuthRequestDTO
 import com.mnc.booking.controller.dto.user.UserCreationDTO
 import com.mnc.booking.controller.dto.user.UserRolesUpdateDTO
 
@@ -21,6 +22,13 @@ trait UserControllerTestData {
     static def prepareUserRolesUpdateDTO(final String roles) {
         [
                 "roles": roles
+        ]
+    }
+
+    static AuthRequestDTO prepareAuthRequest(final String username, final String password) {
+        [
+                "username": username,
+                "password": password
         ]
     }
 
