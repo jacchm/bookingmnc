@@ -3,6 +3,7 @@ package com.mnc.booking.controller
 import com.mnc.booking.controller.dto.ErrorResponseDTO
 import com.mnc.booking.controller.dto.room.RoomCreateResponseDTO
 import com.mnc.booking.controller.dto.room.RoomDTO
+import com.mnc.booking.controller.dto.room.URICreateResponseDTO
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.test.web.client.TestRestTemplate
@@ -151,6 +152,33 @@ class RoomControllerSpec extends Specification implements RoomControllerTestData
         responseEntity.statusCode == HttpStatus.NO_CONTENT
     }
 
+    def "should add a new image uri to an existing room and return status 201 CREATED"() {
+        given: 'roomNo and new image URI'
+        def roomNo = "19"
+        def newURI = prepareURIDTO(roomNo)
+
+        when: 'trying to create a new uri'
+        def responseEntity = testRestTemplate.exchange("/rooms/{id}/uris", HttpMethod.POST, new HttpEntity(newURI), new ParameterizedTypeReference<URICreateResponseDTO>() {
+        }, Map.of("id", roomNo))
+
+        then: 'response should return status 201 CREATED'
+        responseEntity.statusCode == HttpStatus.CREATED
+        responseEntity.getBody().getUriId() != null
+    }
+
+    def "should delete an uri and return status 204"() {
+        given: 'roomNo and new image URI'
+        def roomNo = "19"
+        def uriId = "38"
+        def newURI = prepareURIDTO(roomNo)
+
+        when: 'trying to create a new uri'
+        def responseEntity = testRestTemplate.exchange("/rooms/{id}/uris/{uriId}", HttpMethod.DELETE, new HttpEntity(newURI), new ParameterizedTypeReference<Void>() {
+        }, Map.of("id", roomNo, "uriId", uriId))
+
+        then: 'response should return status 204 NO CONTENT'
+        responseEntity.statusCode == HttpStatus.NO_CONTENT
+    }
 
 
 }

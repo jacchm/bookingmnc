@@ -129,7 +129,7 @@ public class RoomController {
   public ResponseEntity<Void> deleteUri(@PathVariable final String roomNo,
                                         @PathVariable @Min(value = 1, message = "Please provide valid uriId.") final Integer uriId) {
     log.info("URI deletion request received for roomNo={} with uriDto={}", roomNo, uriId);
-    roomService.deleteUri(uriId);
+    roomService.deleteUri(uriId, roomNo);
     return ResponseEntity.noContent().build();
   }
 

@@ -27,6 +27,7 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ReflectionUtils;
 
+import javax.transaction.Transactional;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -101,7 +102,6 @@ public class RoomService {
     roomRepository.deleteById(roomNo);
   }
 
-  // TODO: implement URI management later
   public Integer addUri(final URIDTO uriDto) {
     final String roomNo = uriDto.getRoomNo();
     if (!roomRepository.existsById(roomNo)) {
@@ -113,8 +113,8 @@ public class RoomService {
     return savedUri.getId();
   }
 
-  public void deleteUri(final Integer uriId) {
-    uriRepository.deleteById(uriId);
+  public void deleteUri(final Integer uriId, final String roomNo) {
+    uriRepository.deleteByIdAndAndRoomNo(uriId, roomNo);
   }
 
   public List<DateRangeDTO> getRoomUnavailabilityDateRanges(final String roomNo) {

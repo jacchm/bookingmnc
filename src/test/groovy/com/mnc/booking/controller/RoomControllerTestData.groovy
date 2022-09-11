@@ -30,4 +30,11 @@ trait RoomControllerTestData {
         ]
     }
 
+    static URIDTO prepareURIDTO(final String roomNo) {
+        [
+                "roomNo" : roomNo,
+                "uri": "https://www.sn2.eu/media/k2/items/cache/07a555952c8718faae0fa1f39fe31eb3_XL.jpg"
+        ]
+    }
+
 }
