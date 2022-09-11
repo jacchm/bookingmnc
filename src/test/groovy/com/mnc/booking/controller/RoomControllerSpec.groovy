@@ -1,5 +1,6 @@
 package com.mnc.booking.controller
 
+import com.mnc.booking.config.TestSecurityConfig
 import com.mnc.booking.controller.dto.ErrorResponseDTO
 import com.mnc.booking.controller.dto.room.RoomCreateResponseDTO
 import com.mnc.booking.controller.dto.room.RoomDTO
@@ -18,6 +19,7 @@ import spock.lang.Specification
 
 @SpringBootTest(
         webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,
+        classes = [TestSecurityConfig],
         properties = [
                 "spring.datasource.url=jdbc:tc:postgresql:11-alpine://testcontainers/booking"
         ]

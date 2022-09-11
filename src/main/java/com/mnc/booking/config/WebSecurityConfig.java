@@ -21,6 +21,8 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import java.util.Arrays;
 import java.util.List;
 
+import static com.mnc.booking.security.util.RoleConstants.*;
+
 @RequiredArgsConstructor
 @Configuration
 @EnableWebSecurity
@@ -58,10 +60,10 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         .exceptionHandling().authenticationEntryPoint(unauthorizedHandler).and()
         .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and()
         .authorizeRequests()
-//        .antMatchers("/users/**").hasAuthority(ROLE_ADMIN)
-//        .antMatchers("/rooms/**").hasAnyAuthority(ROLE_ADMIN, ROLE_RECEPTIONIST)
-//        .antMatchers("/reservation/**").hasAnyAuthority(ROLE_ADMIN, ROLE_RECEPTIONIST, ROLE_USER)
-//        .antMatchers("/me/**").hasAnyAuthority(ROLE_ADMIN, ROLE_RECEPTIONIST, ROLE_USER)
+        .antMatchers("/users/**").hasAuthority(ROLE_ADMIN)
+        .antMatchers("/rooms/**").hasAnyAuthority(ROLE_ADMIN, ROLE_RECEPTIONIST)
+        .antMatchers("/reservation/**").hasAnyAuthority(ROLE_ADMIN, ROLE_RECEPTIONIST, ROLE_USER)
+        .antMatchers("/me/**").hasAnyAuthority(ROLE_ADMIN, ROLE_RECEPTIONIST, ROLE_USER)
         .antMatchers("/**").permitAll()
         .anyRequest().authenticated();
     http.addFilterBefore(authenticationJwtTokenFilter(), UsernamePasswordAuthenticationFilter.class);
