@@ -7,6 +7,7 @@ import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 
+import javax.transaction.Transactional;
 import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
@@ -21,6 +22,7 @@ public interface ReservationRepository extends JpaRepository<Reservation, Long>,
 
   Optional<Reservation> findByIdAndUsername(final Long id, final String username);
 
+  @Transactional
   @Modifying
   @Query("update reservation r set r.status = ?2 where r.id = ?1")
   void setReservationStatus(final Long id, final ReservationStatus reservationStatus);
