@@ -108,15 +108,14 @@ public class ReservationService {
         .orElseThrow(() -> new NotFoundException(String.format(RESERVATION_NOT_FOUND_ERROR_MSG, reservationId)));
     final ReservationStatus currentStatus = reservation.getStatus();
 
-    if ((PENDING.equals(currentStatus) && (!PENDING.equals(newReservationStatus) && !ACCEPTED.equals(newReservationStatus)) ||
+    if ((PENDING.equals(currentStatus) && !PENDING.equals(newReservationStatus) && !ACCEPTED.equals(newReservationStatus)) ||
         (PAID.equals(currentStatus) && !PAID.equals(newReservationStatus) && !PENDING.equals(newReservationStatus)) ||
         (REJECTED.equals(currentStatus)) ||
-        (ACCEPTED.equals(currentStatus)))) {
-      throw new BadRequestException(
-          String.format(RESERVATION_STATUS_UPDATE_NOT_ALLOWED_ERROR_MSG, reservationId, currentStatus, newReservationStatus));
+        (ACCEPTED.equals(currentStatus))) {
+      reservationRepository.setReservationStatus(reservationId, newReservationStatus);
     }
-
-    reservationRepository.setReservationStatus(reservationId, newReservationStatus);
+    throw new BadRequestException(
+        String.format(RESERVATION_STATUS_UPDATE_NOT_ALLOWED_ERROR_MSG, reservationId, currentStatus, newReservationStatus));
   }
 
   private Specification<Reservation> buildFilteringQuery(final ReservationFilterParams filters) {
