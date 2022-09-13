@@ -113,6 +113,7 @@ public class ReservationService {
         (REJECTED.equals(currentStatus)) ||
         (ACCEPTED.equals(currentStatus))) {
       reservationRepository.setReservationStatus(reservationId, newReservationStatus);
+      return;
     }
     throw new BadRequestException(
         String.format(RESERVATION_STATUS_UPDATE_NOT_ALLOWED_ERROR_MSG, reservationId, currentStatus, newReservationStatus));

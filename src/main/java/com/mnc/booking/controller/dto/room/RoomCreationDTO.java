@@ -40,7 +40,7 @@ public class RoomCreationDTO {
   private Boolean isCoffeeMachine;
   @NotNull(message = "isRestArea must be specified.")
   private Boolean isRestArea;
-  @NotNull(message = "isRestArea must be specified.")
+  @NotNull(message = "roomSize must be specified.")
   @Valid
   private MeasurementUnitDTO roomSize;
   @NotNull(message = "images list must be specified.")

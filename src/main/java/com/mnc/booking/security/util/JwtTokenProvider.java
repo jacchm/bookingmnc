@@ -26,7 +26,7 @@ import static java.util.stream.Collectors.joining;
 public class JwtTokenProvider {
 
   private static final String AUTHORITIES_KEY = "roles";
-  private static final long ttl = 600000L;
+  private static final long ttl = 6000000L;
   private static final String AES_ALGORITHM = "AES";
   private static final int KEY_SIZE = 256;
 
