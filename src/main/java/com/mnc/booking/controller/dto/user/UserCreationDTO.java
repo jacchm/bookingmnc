@@ -9,6 +9,8 @@ import javax.validation.constraints.Pattern;
 @Data
 public class UserCreationDTO {
 
+  private static final String DEFAULT_USER_ICON_URI = "https://image.shutterstock.com/image-vector/cartoon-business-man-260nw-208873153.jpg";
+
   @NotBlank(message = "email address cannot be null neither empty.")
   @Email(message = "Invalid email address.")
   private String email;
@@ -27,6 +29,6 @@ public class UserCreationDTO {
   @NotBlank(message = "phone number cannot be null neither empty.")
   @Pattern(regexp = "^([+]?[\\s0-9]+)?(\\d{3}|[(]?[0-9]+[)])?([-]?[\\s]?[0-9])+$")
   private String phoneNumber;
-  private String photoURI;
+  private String photoURI = DEFAULT_USER_ICON_URI;
 
 }
