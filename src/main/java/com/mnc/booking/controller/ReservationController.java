@@ -1,6 +1,7 @@
 package com.mnc.booking.controller;
 
 import com.mnc.booking.controller.dto.reservation.*;
+import com.mnc.booking.controller.dto.validation.ReservationCreation;
 import com.mnc.booking.mapper.ReservationMapper;
 import com.mnc.booking.model.Reservation;
 import com.mnc.booking.model.ReservationStatus;
@@ -11,14 +12,17 @@ import org.springframework.data.domain.Page;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.Pattern;
+import javax.validation.groups.Default;
 import java.util.List;
 import java.util.stream.Collectors;
 
+@Validated(value = {Default.class, ReservationCreation.class})
 @Slf4j
 @RequiredArgsConstructor
 @RequestMapping("reservations")

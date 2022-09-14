@@ -64,7 +64,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         .antMatchers("/users/**").hasAuthority(ROLE_ADMIN)
         .antMatchers(HttpMethod.GET, "/rooms/**").permitAll()
         .antMatchers("/rooms/**").hasAnyAuthority(ROLE_ADMIN, ROLE_RECEPTIONIST)
-        .antMatchers("/reservation/**").hasAnyAuthority(ROLE_ADMIN, ROLE_RECEPTIONIST)
+        .antMatchers("/reservations/**").hasAnyAuthority(ROLE_ADMIN, ROLE_RECEPTIONIST)
         .antMatchers("/me/**").hasAnyAuthority(ROLE_ADMIN, ROLE_RECEPTIONIST, ROLE_USER)
         .antMatchers("/**").permitAll()
         .anyRequest().authenticated();
