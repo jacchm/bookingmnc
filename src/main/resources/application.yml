@@ -11,10 +11,10 @@ spring:
     url: jdbc:postgresql://ec2-54-157-16-196.compute-1.amazonaws.com/d70bt103r42qil
     username: gfqchydbarkdgg
     password: ade73d550e704c6bfe32b189127e9b85cb51964f6db389adedda4869339f60b7
-#  datasource:
-#    url: jdbc:postgresql://localhost:5432/booking
-#    username: postgres
-#    password: "${Password}"
+  #  datasource:
+  #    url: jdbc:postgresql://localhost:5432/booking
+  #    username: postgres
+  #    password: "${Password}"
   jackson:
     default-property-inclusion: non_null
     serialization:
@@ -30,4 +30,4 @@ logging:
     org.hibernate.type: TRACE
 ---
 authTokenFilter:
-  enabled: false
+  enabled: true
