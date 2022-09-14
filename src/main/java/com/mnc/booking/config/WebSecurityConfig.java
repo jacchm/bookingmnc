@@ -5,6 +5,7 @@ import com.mnc.booking.service.UserDetailsServiceImpl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -61,9 +62,9 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and()
         .authorizeRequests()
         .antMatchers("/users/**").hasAuthority(ROLE_ADMIN)
+        .antMatchers(HttpMethod.GET, "/rooms/**").permitAll()
         .antMatchers("/rooms/**").hasAnyAuthority(ROLE_ADMIN, ROLE_RECEPTIONIST)
-        .antMatchers("/reservation/**").hasAnyAuthority(ROLE_ADMIN, ROLE_RECEPTIONIST, ROLE_USER)
-//        .antMatchers("/reservation/**").hasAnyAuthority(ROLE_ADMIN, ROLE_RECEPTIONIST, ROLE_USER)
+        .antMatchers("/reservation/**").hasAnyAuthority(ROLE_ADMIN, ROLE_RECEPTIONIST)
         .antMatchers("/me/**").hasAnyAuthority(ROLE_ADMIN, ROLE_RECEPTIONIST, ROLE_USER)
         .antMatchers("/**").permitAll()
         .anyRequest().authenticated();
