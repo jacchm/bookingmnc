@@ -33,7 +33,7 @@ public class RoomController {
 
   private static final String X_TOTAL_COUNT = "X-TOTAL-COUNT";
   private static final String FIELD_DIR_REGEX = "[-\\w]+(\\.[-\\w]+)*(:[a-zA-Z]+)?";
-  private static final String SORT_REGEX = "^" + FIELD_DIR_REGEX + "(," + FIELD_DIR_REGEX + ")*$";
+  private static final String SORT_REGEX = "^" + FIELD_DIR_REGEX + "(," + FIELD_DIR_REGEX + ")*$|^$";
   private static final String FULL_SORT_REGEX = SORT_REGEX + "|^$";
 
   private final RoomService roomService;

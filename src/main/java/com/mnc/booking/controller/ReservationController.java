@@ -1,7 +1,7 @@
 package com.mnc.booking.controller;
 
 import com.mnc.booking.controller.dto.reservation.*;
-import com.mnc.booking.controller.dto.validation.ReservationCreation;
+import com.mnc.booking.controller.dto.validation.ReservationControllerValidation;
 import com.mnc.booking.mapper.ReservationMapper;
 import com.mnc.booking.model.Reservation;
 import com.mnc.booking.model.ReservationStatus;
@@ -22,7 +22,7 @@ import javax.validation.groups.Default;
 import java.util.List;
 import java.util.stream.Collectors;
 
-@Validated(value = {Default.class, ReservationCreation.class})
+@Validated(value = {Default.class, ReservationControllerValidation.class})
 @Slf4j
 @RequiredArgsConstructor
 @RequestMapping("reservations")
@@ -31,7 +31,7 @@ public class ReservationController {
 
   private static final String X_TOTAL_COUNT = "X-TOTAL-COUNT";
   private static final String FIELD_DIR_REGEX = "[-\\w]+(\\.[-\\w]+)*(:[a-zA-Z]+)?";
-  private static final String SORT_REGEX = "^" + FIELD_DIR_REGEX + "(," + FIELD_DIR_REGEX + ")*$";
+  private static final String SORT_REGEX = "^" + FIELD_DIR_REGEX + "(," + FIELD_DIR_REGEX + ")*$|^$";
 
   private final ReservationService reservationService;
   private final ReservationMapper reservationMapper;

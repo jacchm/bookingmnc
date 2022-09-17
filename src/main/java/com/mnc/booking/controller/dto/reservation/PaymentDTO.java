@@ -1,6 +1,7 @@
 package com.mnc.booking.controller.dto.reservation;
 
 import com.mnc.booking.controller.dto.PriceDTO;
+import com.mnc.booking.controller.dto.validation.ReservationControllerValidation;
 import lombok.Data;
 
 import javax.validation.Valid;
@@ -11,8 +12,6 @@ public class PaymentDTO {
 
   @Valid
   private PriceDTO payment;
-  @NotBlank(message = "cardNo must be specified.")
-  private String cardNo;
-  @NotBlank(message = "username must be specified.")
+  @NotBlank(message = "username must be specified.", groups = ReservationControllerValidation.class)
   private String username;
 }

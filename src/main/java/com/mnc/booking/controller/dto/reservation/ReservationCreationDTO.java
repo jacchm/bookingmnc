@@ -1,6 +1,6 @@
 package com.mnc.booking.controller.dto.reservation;
 
-import com.mnc.booking.controller.dto.validation.ReservationCreation;
+import com.mnc.booking.controller.dto.validation.ReservationControllerValidation;
 import com.mnc.booking.controller.dto.validation.ValidDateRange;
 import lombok.Data;
 
@@ -12,7 +12,7 @@ public class ReservationCreationDTO {
 
   @NotBlank(message = "roomNo must be specified.")
   private String roomNo;
-  @NotBlank(message = "username must be specified.", groups = ReservationCreation.class)
+  @NotBlank(message = "username must be specified.", groups = ReservationControllerValidation.class)
   private String username;
   @Min(value = 1, message = "noPeople must be specified and greater than or equal to 1.")
   private int noPeople;

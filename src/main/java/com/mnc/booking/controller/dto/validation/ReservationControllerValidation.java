@@ -1,4 +1,4 @@
 package com.mnc.booking.controller.dto.validation;
 
-public interface ReservationCreation {
+public interface ReservationControllerValidation {
 }
