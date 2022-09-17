@@ -17,6 +17,9 @@ import org.testcontainers.spock.Testcontainers
 import spock.lang.Shared
 import spock.lang.Specification
 
+/**
+ * Integration-Test class covering the whole flow for basic CRUD functionality of Room entity.
+ * */
 @SpringBootTest(
         webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,
         classes = [TestSecurityConfig],

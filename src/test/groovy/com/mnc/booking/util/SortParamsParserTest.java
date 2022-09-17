@@ -10,6 +10,9 @@ import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+/**
+ * Unit-Test class covering the sorting parameter parser functionality.
+ */
 class SortParamsParserTest {
 
   SortParamsParser sortParamsParser = new SortParamsParser();
@@ -20,7 +23,7 @@ class SortParamsParserTest {
   }
 
   @Test
-  void prepareSortOrderListTest() {
+  void shouldReturnSortOrderListWithSortingParametersInProperOrderingAndDirection() {
     final List<Sort.Order> sortOrderList = sortParamsParser.prepareSortOrderList("username:asc,name", User.class);
     assertThat(sortOrderList).isNotEmpty();
     assertThat(sortOrderList).contains(new Sort.Order(Sort.Direction.ASC, "username"));
@@ -28,7 +31,7 @@ class SortParamsParserTest {
   }
 
   @Test
-  void prepareSortOrderListToTestDefaultDirection() {
+  void shouldReturnSortOrderListWithSortingParametersInProperOrderingAndDefaultDirection() {
     final List<Sort.Order> sortOrderList = sortParamsParser.prepareSortOrderList(
         "username,email,password,name,surname,dateOfBirth,authorities,phoneNumber", User.class);
     assertThat(sortOrderList).isNotEmpty().containsExactly(
@@ -43,7 +46,7 @@ class SortParamsParserTest {
   }
 
   @Test
-  void prepareSortOrderListToTestExactDirection() {
+  void shouldReturnSortOrderListWithSortingParametersInProperOrderingAndExactDirection() {
     final List<Sort.Order> sortOrderList = sortParamsParser.prepareSortOrderList(
         "username:asc,email:ASC,password:desc,name:DESC,surname,dateOfBirth:asc,authorities,phoneNumber", User.class);
     assertThat(sortOrderList).isNotEmpty().containsExactly(

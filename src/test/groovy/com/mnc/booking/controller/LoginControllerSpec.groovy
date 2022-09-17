@@ -14,6 +14,9 @@ import org.testcontainers.spock.Testcontainers
 import spock.lang.Shared
 import spock.lang.Specification
 
+/**
+ * Integration-Test class covering the whole flow for registering a new user and logging a new user.
+ * */
 @SpringBootTest(
         webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,
         properties = [

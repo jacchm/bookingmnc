@@ -16,6 +16,9 @@ import org.testcontainers.spock.Testcontainers
 import spock.lang.Shared
 import spock.lang.Specification
 
+/**
+ * Integration-Test class covering the whole flow for basic CRUD functionality of User entity.
+ * */
 @SpringBootTest(
         webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,
         classes = [TestSecurityConfig],
@@ -101,6 +104,8 @@ class UserControllerSpec extends Specification implements UserControllerTestData
         userResponse.getMessage() != null
     }
 
+    // TODO: to make these tests work the testRestTemplate has to be exchanged for some another WebClient which supports PATCH operation
+    //       becasue testRestTemplate is based on some old Java underlying client it doesn't support PATCH operation
 //    def "should update a user role and return status 204"() {
 //        given: 'username'
 //        def username = "user"
