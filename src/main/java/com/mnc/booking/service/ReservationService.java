@@ -91,7 +91,7 @@ public class ReservationService {
     // TODO: here is the place to implement payment via payment service.
     //  Payment service should be integrated with real payment platform.
 
-    if (!paymentDTO.getPayment().getValue().equals(reservation.getTotalCostValue())) {
+    if (paymentDTO.getPayment().getValue().compareTo(reservation.getTotalCostValue()) != 0) {
       throw new BadRequestException(
           String.format(PAYMENT_WRONG_AMOUNT_ERROR_MSG, paymentDTO.getPayment().getValue(), reservation.getTotalCostValue()));
     }
