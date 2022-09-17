@@ -74,7 +74,7 @@ public class RoomController {
                                                           @RequestParam(required = false, defaultValue = "1") final Integer pageNumber,
                                                           @RequestParam(required = false, defaultValue = "10") final Integer pageSize,
                                                           @Nullable @Pattern(regexp = FULL_SORT_REGEX, message = "Sort parameters should be in form of field:direction (ASC/DESC) separated by ',' (comma).")
-                                                          @RequestParam(required = false, defaultValue = "") final String sort,
+                                                          @RequestParam(required = false, defaultValue = "noPeople:ASC") final String sort,
                                                           @Valid final RoomSearchParams filterParams) {
     log.info("Rooms search request received with params: pageSize={}, pageNumber={}, xTotalCount={}, sortParams={} and filterParams={}", pageSize, pageNumber, xTotalCount, sort, filterParams);
     final Page<Room> result = roomService.findAvailableRooms(pageNumber - 1, pageSize, sort, filterParams);
