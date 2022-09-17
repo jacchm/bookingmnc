@@ -103,6 +103,15 @@ public class MeController {
     return ResponseEntity.ok().headers(responseHeaders).body(reservations);
   }
 
+  @GetMapping("/reservations/{reservationId}")
+  public ResponseEntity<ReservationDTO> getMyReservation(@PathVariable @Min(value = 1, message = "Provide a valid reservationId") final Long reservationId,
+                                                         @RequestHeader final String username) {
+    log.info("Reservation fetch request received for reservationId={} and username={}", reservationId, username);
+
+    final ReservationDTO reservationDTO = reservationMapper.mapToReservationDTO(reservationService.getReservation(reservationId));
+    return ResponseEntity.ok(reservationDTO);
+  }
+
   @PostMapping("/reservations/{reservationId}/payment")
   public ResponseEntity<ReservationDTO> payForReservation(@PathVariable @Min(value = 1, message = "Provide a valid reservationId") final Long reservationId,
                                                           @Valid @RequestBody final PaymentDTO paymentDTO,
